@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>菠菜概率计算器</title>
+    <link href="css/mui.css" rel="stylesheet"/>
+   	<style type="text/css">
+    	.font18{
+			font-size:18px;
+			font-family: "微软雅黑";
+		}
+		.line18{
+			line-height:50px;
+			font-size:18px;
+			font-family: "微软雅黑";
+		}
+		.width30{
+			float:left;
+    		text-align: right;
+		}
+		.padding11{
+			line-height:40px;
+			padding-top:11px;
+			color:#555;
+		}
+		.halfButton{
+			background-color:#5CE665;
+			margin-left:1%;
+			width:48%;
+			line-height:2;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+    	<h1 class="mui-title">菠菜概率计算器</h1>
+	</header>
+	<div class="mui-content" style="padding-bottom:55px;" id="muiContent" v-on:keyup.enter="submit">
+		<h5 class="mui-content-padded font18">菠菜类别</h5>
+		<div class="mui-card font18">
+			<span class="mui-input-row mui-radio mui-left">
+				<label for="radioA">单次</label>
+				<input name="radio1" checked type="radio" value="one" id="radioA"
+					v-on:click="hideOdds2">
+			</span>
+			<span class="mui-input-row mui-radio mui-left">
+				<label for="radioB">二串一</label>
+				<input name="radio1" type="radio" value="twoOne" id="radioB"
+					v-on:click="hideOdds2">
+			</span>
+			<span class="mui-input-row mui-radio mui-left">
+				<label for="radioC">三串一</label>
+				<input name="radio1" type="radio" value="threeOne" id="radioC"
+					v-on:click="hideOdds2">
+			</span>
+			<span class="mui-input-row mui-radio mui-left">
+				<label for="radioD">三串二</label>
+				<input name="radio1" type="radio" value="threeTwo" id="radioD"
+					v-on:click="hideOdds2">
+			</span>
+			<span class="mui-input-row mui-radio mui-left">
+				<label for="radioE">三串三</label>
+				<input name="radio1" type="radio" value="threeThree" id="radioE"
+					v-on:click="showOdds2">
+			</span>
+		</div>
+		<h5 class="mui-content-padded font18">参数</h5>
+		<div class="mui-card font18">
+		    <div class="mui-input-row">
+		        <label>实验次数：</label>
+		        <input type="number" value="1000000" id="times" class="mui-input-clear">
+		        <span class="padding11">次</span>
+		    </div>
+		    <div class="mui-input-row">
+		        <label>下注金额：</label>
+		        <input type="number" id="corpus" class="mui-input-clear" value="1">
+		        <span class="padding11">元</span>
+		    </div>
+		    <div class="mui-input-row">
+		        <label>赔&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率：</label>
+		        <input type="number" id="odds1" value="1.9" class="mui-input-clear" v-bind:placeholder="odds1PH" >
+		        <span class="padding11">倍</span>
+		    </div>
+		    <div id="oddsDiv2" class="mui-input-row" v-if="odds2Show">
+		        <label>赔&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率2：</label>
+		        <input type="number" id="odds2" class="mui-input-clear" v-bind:placeholder="odds2PH">
+		        <span class="padding11">倍</span>
+		    </div>
+		    <div class="mui-input-row">
+		        <label>胜&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率：</label>
+		        <input type="number" id="rate" value="0.52" class="mui-input-clear" placeholder="每次猜对的成功率"  >
+		        <span class="padding11"></span>
+		    </div>
+		</div>
+		<h5 id="errSpan" class="mui-content-padded font18" style="height:20px;color:red;">{{errMsg}}</h5>
+		<button type="button" class="mui-btn mui-btn-primary font18" style="width:100%;line-height:2;"
+			v-on:click="submit">
+			计算
+		</button>
+		<div style="height:5px;"></div>
+		<button type="button" class="mui-btn mui-btn-primary font18 halfButton" 
+			v-on:click="npChartClick">
+			正负图
+		</button>
+		<button type="button" class="mui-btn mui-btn-primary font18 halfButton" 
+			v-on:click="gChartClick">
+			趋势图
+		</button>
+	</div>
+	<div id="nav">
+		<mynav menu1="true"></mynav>
+	</div>
+	<div id="countLayer" style="padding:10px 30px;display:none;" >
+		<div class="line18" v-for="result in results">
+			<label class="width30">{{result.name}}：</label>{{result.data}} {{result.end}}
+		</div>
+	</div>
+	<div id="npChartDiv" style="display:none;">
+		<div id="pChartDiv" style="width:100%;height:40%"></div>
+		<div id="nChartDiv" style="width:100%;height:40%"></div>
+	</div>
+	<div id="gChartDiv" style="display:none;width:100%"></div>
+	
+<script src="js/vue.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/highcharts.js"></script>
+<script src="js/exporting.js"></script>
+<script type="text/javascript" charset="utf-8">
+var mc=new Vue({
+	el:"#muiContent",
+	data:{
+		odds1PH:"赔率",
+		odds2PH:"三串二赔率",
+		odds2Show:false,
+		errMsg:""
+	},
+	methods:{
+		showOdds2:function(){
+			mc.odds1PH="三串一赔率";
+			mc.odds2Show=true;
+		},
+		hideOdds2:function(){
+			mc.odds1PH="赔率";
+			mc.odds2Show=false;
+		},
+		submit:function(){
+			//校验参数
+			if(check()==false)
+				return;
+			//loading
+			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+			$.post("count.do",getParam(),function(data){
+				layer.close(loadLayer);
+				for(var i=0;i<data.length;i++){
+					var result=data[i];
+					if(typeof result.v == "number")
+						result.end="次";
+					if(typeof result.v == "string")
+						result.end="元";
+				}
+				ld.results=data;
+				//渲染完成再回调
+				Vue.nextTick(function(){
+					var countLayer=layer.open({
+						title:"<div class='font18'>运算结果</div>",
+						btn: ["确定"],
+						btn1:function(){
+							layer.close(countLayer);
+						},
+						type:1,
+						content:$("#countLayer")
+					});
+				});
+			},"json");
+		},
+		npChartClick:function(){
+			if(check()==false)
+				return;
+			//loading
+			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+			var param=getParam();
+			$.post("npChart.do",param,function(data){
+				layer.close(loadLayer);
+				var nList=JSON.parse(data.minList);
+				var pList=JSON.parse(data.maxList);
+				var xArrN=[];var countN=[];
+				var xArrP=[];var countP=[];
+				for(var i=0;i<nList.length;i++){
+					xArrN.push(nList[i].avg);
+					countN.push(nList[i].count);
+				}
+				for(var i=0;i<pList.length;i++){
+					xArrP.push(pList[i].avg);
+					countP.push(pList[i].count);
+				}
+				$('#pChartDiv').highcharts({
+					chart: {
+						type: 'line'
+					},
+					title: {
+						text: "每组100次菠菜的最大收益趋势图",
+						style: {
+							fontSize:'12px',							
+							fontWeight:'bold',
+							color: '#7B6159',
+							fontFamily: 'DroidSans817c0905317c50'
+						},
+					},
+					xAxis: {
+						categories: xArrP
+					},
+					yAxis: {
+						title: {
+							text: '次数'
+						},
+						labels: false
+					},
+					legend:{
+						enabled:false,
+					},
+					plotOptions: {
+						line: {
+							dataLabels: {
+								allowOverlap: true,
+								align: 'right',
+								enabled: true
+							},
+							enableMouseTracking: false
+						}
+					},
+					series: [{
+						data:countP,
+						color: '#ff5722'
+					}],
+					credits: {
+						enabled:false
+					},
+					exporting: {
+						enabled:false
+					}
+				});
+				$('#nChartDiv').highcharts({
+					chart: {
+						type: 'line'
+					},
+					title: {
+						text: "每组100次菠菜的最小收益趋势图",
+						style: {
+							fontSize:'12px',
+							fontWeight:'bold',
+							color: '#7B6159',
+							fontFamily: 'DroidSans817c0905317c50'
+						},
+					},
+					xAxis: {
+						categories: xArrN
+					},
+					yAxis: {
+						title: {
+							text: '次数'
+						},
+						labels: false
+					},
+					legend:{
+						enabled:false,
+					},
+					plotOptions: {
+						line: {
+							dataLabels: {
+								allowOverlap: true,
+								align: 'right',
+								enabled: true
+							},
+							enableMouseTracking: false
+						}
+					},
+					series: [{
+						data:countN,
+						color: '#ff5722'
+					}],
+					credits: {
+						enabled:false
+					},
+					exporting: {
+						enabled:false
+					}
+				});
+				var npChartLayer=layer.open({
+					title:"<div class='font18'>正负图</div>",
+					btn: ["确定"],
+					btn1:function(){
+						layer.close(npChartLayer);
+					},
+					type:1,
+					content:$("#npChartDiv"),
+					area:"100%"
+				});
+			},"json");
+		},
+		gChartClick:function(){
+			if(check()==false)
+				return;
+			//loading
+			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+			var param=getParam();
+			$.post("gChart.do",param,function(data){
+				layer.close(loadLayer);
+				var xArr=[];var count=[];
+				for(var i=0;i<data.length;i++){
+					xArr.push(data[i].avg);
+					count.push(data[i].count);
+				}
+				$('#gChartDiv').highcharts({
+					chart: {
+						type: 'line'
+					},
+					title: {
+						text: "每组100次菠菜的收益趋势图<br/>横轴表示收益金额",
+						style: {
+							fontWeight:'bold',
+							color: '#7B6159',
+							fontFamily: 'DroidSans817c0905317c50'
+						},
+					},
+					xAxis: {
+						categories: xArr
+					},
+					yAxis: {
+						title: {
+							text: '次数'
+						},
+						labels: false
+					},
+					legend:{
+						enabled:false,
+					},
+					plotOptions: {
+						line: {
+							dataLabels: {
+								allowOverlap: true,
+								align: 'right',
+								enabled: true
+							},
+							enableMouseTracking: false
+						}
+					},
+					series: [{
+						data:count,
+						color: '#ff5722'
+					}],
+					credits: {
+						enabled:false
+					},
+					exporting: {
+						enabled:false
+					}
+				});
+				var gChartLayer=layer.open({
+					title:"<div class='font18'>趋势图</div>",
+					btn: ["确定"],
+					btn1:function(){
+						layer.close(gChartLayer);
+					},
+					type:1,
+					content:$("#gChartDiv"),
+					area:"100%"
+				});
+			},"json");
+		}
+	}
+});
+var ld=new Vue({
+	el:"#countLayer",
+	data:{
+		results:{}
+	}
+});
+function check(){
+	mc.errMsg="";
+	var param=getParam();
+	if(param.bocaiType==""||param.bocaiType==undefined){
+		mc.errMsg="请选择菠菜类型";
+		return false;
+	}
+	//校验实验次数
+	if(param.times==""){
+		mc.errMsg="请输入实验次数";
+		return false;
+	}
+	reg=new RegExp("^[1-9][0-9]*$");
+	if(!reg.test(param.times)){
+    	mc.errMsg="请输入正确的实验次数";
+		return false;
+   	}
+	//校验下注金额
+	if(param.corpus==""){
+		mc.errMsg="请输入下注金额";
+		return false;
+	}
+	reg=new RegExp("^[1-9][0-9]*(.[0-9]*)?$");
+	if(!reg.test(param.corpus)){  
+    	mc.errMsg="请输入正确的下注金额";
+		return false;
+   	}
+	//校验赔率
+	if(param.odds1==""){
+		mc.errMsg="请输入赔率1";
+		return false;
+	}
+	if(!reg.test(param.odds1)){  
+    	mc.errMsg="请输入正确的赔率1";
+		return false;
+   	}
+	if(document.getElementById("radioE").checked){
+		if(param.odds2==""){
+			mc.errMsg="请输入赔率2";
+			return false;
+		}
+		if(!reg.test(param.odds2)){  
+        	mc.errMsg="请输入正确的赔率2";
+			return false;
+       	}
+	}
+	//校验胜率
+	if(param.rate==""){
+		mc.errMsg="请输入胜率";
+		return false;
+	}
+	reg=new RegExp("^[0](.[0-9]*)?$");
+	if(!reg.test(param.rate)){
+    	mc.errMsg="请输入正确的胜率(0-1之间)";
+		return false;
+   	}
+	return true;
+}
+function getParam(){
+	var param={};
+	var bocaiType=$("input:radio[name=radio1]:checked").val();
+	var times=document.getElementById("times").value;
+	var corpus=document.getElementById("corpus").value;
+	var odds1=document.getElementById("odds1").value;
+	if(document.getElementById("radioE").checked){
+		var odds2=document.getElementById("odds2").value;
+		param.odds2=odds2;
+	}
+	var rate=document.getElementById("rate").value;
+	//发送请求
+	param.bocaiType=bocaiType,
+	param.times=times;
+	param.corpus=corpus;
+	param.odds1=odds1;
+	param.rate=rate;
+	
+	return param;
+}
+</script>
+</body>
+</html>

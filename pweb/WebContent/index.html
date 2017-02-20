@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<title>市级招标公告</title>
+		<link rel="stylesheet" href="css/bootstrap.css"></link>
+	</head>
+	<body>
+	<div class="container-fluid" id="divBody">
+		<div class="page-header">
+	  		<h1>湖北省政府采购网<small>市级招标公告</small></h1>
+		</div>
+		<div class="input-group" id="inputGroup">
+		  	<span class="input-group-addon" id="basic-addon3">搜索</span>
+		  	<input type="text" class="form-control" id="basic-url" placeholder="请输入搜索关键字"
+		  		v-model="searchWd" aria-describedby="basic-addon3">
+		</div>
+		<div class="list-group" id="listGroup">
+  			<a v-for="row in list" v-show="row.show" v-bind:href="row.href" target="_blank" class="list-group-item" > 
+    			<span style="color:blue">[{{row.type}}]</span>
+    			<span v-html="row.showName"></span>
+    			<span style="text-align:right;float:right;">{{row.time}}</span>
+  			</a>
+			<div class="panel-footer" style="text-align: center">共{{total}}条</div>
+		</div>
+	</div>
+<script src="js/vue.js"></script>
+<script src="js/jquery.js"></script>
+<script type="text/javascript">
+var lg=new Vue({
+	el:"#divBody",
+	beforeCreate:function(){
+		$.post("MainServlet",function(data){
+			for(var i=0;i<data.length;i++){
+				data[i].show=true;
+				data[i].showName=data[i].name;//显示的内容
+			}
+			lg.list=data;
+			lg.total=data.length;
+		},"json");
+	},
+	watch: {
+		searchWd: function (val) {
+			var vArr=val.split("");
+			this.total=0;
+			for(var i=0;i<lg.list.length;i++){
+				var name=lg.list[i].name;
+				//设显示和真实一致
+				lg.list[i].showName=name;
+				
+				var find=true;
+				//找到完整的词汇
+				if(name.indexOf(val)!=-1){
+					var index=name.indexOf(val);
+					var showName=lg.list[i].showName;
+					lg.list[i].showName=showName.substring(0,index)
+						+"<span style='color:red'>"+val+"</span>"
+						+showName.substring(index+val.length);
+				//分开一个字一个字的找
+				}else{
+					for(var j=0;j<vArr.length;j++){
+						if(name.indexOf(vArr[j])==-1){
+							find=false;
+							break;
+						}else{
+							var showName=lg.list[i].showName;
+							lg.list[i].showName=showName.substring(0,showName.indexOf(vArr[j]))
+								+"<span style='color:red'>"+vArr[j]+"</span>"
+								+showName.substring(showName.indexOf(vArr[j])+vArr[j].length);
+						}
+					}
+				}
+				if(find){
+					lg.list[i].show=true;
+					this.total++;
+				}else{
+					lg.list[i].show=false;
+				}
+			} 
+		}
+	},
+	data:{
+		list:[],
+		searchWd:"",
+		total:0
+	}
+});
+</script> 
+	</body>
+</html>

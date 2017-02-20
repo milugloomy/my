@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>菠菜概率计算器</title>
+    <link href="css/mui.css" rel="stylesheet"/>
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+  	<style type="text/css">
+    	.font18{
+			font-size:18px;
+			font-family: "微软雅黑";
+		}
+		table td{
+			padding:1px 3px;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+    	<h1 class="mui-title">NBA查询</h1>
+	</header>
+	<div class="mui-content" style="padding-bottom:55px;" id="muiContent" v-on:keyup.enter="submit">
+		<h5 class="mui-content-padded font18">胜率（2014赛季至今）</h5>
+		<div class="mui-card font18">
+			<ul class="mui-table-view">
+		         <li class="mui-table-view-cell">主队胜率：<span style="padding-left:5%">{{homeRate}}</span></li>
+		         <li class="mui-table-view-cell">客队胜率：<span style="padding-left:5%">{{visitRate}}</span></li>
+		         <li class="mui-table-view-cell">买大胜率：<span style="padding-left:5%">{{bigRate}}</span></li>
+		         <li class="mui-table-view-cell">买小胜率：<span style="padding-left:5%">{{smallRate}}</span></li>
+			</ul>
+		</div>
+		<h5 class="mui-content-padded font18">球队战绩</h5>
+		<div class="mui-card font18">
+			<button v-on:click="chooseTeam" class="mui-btn mui-btn-primary"
+				style="width:100%;font-size:18px;line-height:2;">{{team}}&nbsp;&nbsp;&nbsp;﹀</button>
+			<ul class="mui-table-view" v-if="detailShow">
+		    	<li class="mui-table-view-cell">本赛季主场平均分：<span style="padding-left:5%">{{homeAvg}}</span></li>
+	        	<li class="mui-table-view-cell">本赛季客场平均分：<span style="padding-left:5%">{{visitAvg}}</span></li>
+		    	<li class="mui-table-view-cell">近五场客场平均分：<span style="padding-left:5%">{{last5HomeAvg}}</span></li>
+		    	<li class="mui-table-view-cell">近五场主场平均分：<span style="padding-left:5%">{{last5VisitAvg}}</span></li>
+		    	<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="javascript:;" style="color:cornflowerblue">近5场比分：</a>
+					<div class="mui-collapse-content" style="font-size:14px;text-align:center">
+						<template v-for="game in games">
+							<div class="mui-input-row" style="color:#020a97">
+								时间：{{game.matchTime}}
+							</div>
+							<table align="center">
+								<tr style="border-bottom: 1px solid #b9b9b9;">
+									<template v-if="game.isHome==true">
+										<td width="40%" style="font-weight: bold">{{game.homeTeam}}</td>
+										<td width="20%" nowrap="nowrap" style="color:red"> {{game.score}} </td>
+										<td width="40%">{{game.visitTeam}}</td>
+									</template>
+									<template v-if="game.isHome==false">
+										<td width="40%">{{game.homeTeam}}</td>
+										<td width="20%" nowrap="nowrap" style="color:red"> {{game.score}} </td>
+										<td width="40%" style="font-weight: bold">{{game.visitTeam}}</td>
+									</template>
+								</tr>
+							</table>
+						</template>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="nav">
+		<mynav menu2="true"></mynav>
+	</div>
+	
+<script src="js/vue.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/mui.js"></script>
+<script src="js/mui.picker.js"></script>
+<script src="js/mui.poppicker.js"></script>
+<script src="js/teamData.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+var teamPicker;
+var mc=new Vue({
+	el:"#muiContent",
+	beforeCreate:function(){
+		$.post("totalRateQry.do",function(data){
+			mc.bigRate=data.bigRate*10000/100+"%"+"（"+data.bigCount+"场）";
+			mc.smallRate=data.smallRate*10000/100+"%"+"（"+data.smallCount+"场）";
+			mc.homeRate=data.homeRate*10000/100+"%"+"（"+data.homeCount+"场）";
+			mc.visitRate=data.visitRate*10000/100+"%"+"（"+data.visitCount+"场）";
+		},"json");
+	},
+	data:{
+		team:"选择球队",
+		bigRate:"",
+		smallRate:"",
+		homeRate:"",
+		visitRate:"",
+		homeAvg:"",
+		visitAvg:"",
+		last5HomeAvg:"",
+		last5VisitAvg:"",
+		detailShow:false,
+		games:""
+	},
+	methods:{
+		chooseTeam:function(event){
+			var button=event.currentTarget;
+			if(!teamPicker){
+				teamPicker = new mui.PopPicker({
+					layer: 2,
+				});
+				teamPicker.setData(teamData);
+			}
+			teamPicker.show(function(items) {
+				var teamName=items[1].text;
+				mc.team="当前选择："+teamName;
+				$.post("teamRateQry.do",{teamName:teamName},function(data){
+					mc.homeAvg=data.homeAvg;
+					mc.visitAvg=data.visitAvg;
+					mc.last5HomeAvg=data.last5HomeAvg;
+					mc.last5VisitAvg=data.last5VisitAvg;
+					mc.detailShow=true;
+					mc.games=data.last5Game;
+				},"json")
+			});
+		}
+	}
+});
+</script>
+</body>
+</html>
