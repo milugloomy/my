@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+
+<sqlMapConfig>
+
+    <settings useStatementNamespaces="true"/>
+
+	<!-- Common Module -->
+	<sqlMap resource="config/sql-mapping/ibs.xml"/>
+    <sqlMap resource="config/sql-mapping/ecif.xml"/>
+    <sqlMap resource="config/sql-mapping/eip.xml"/>
+    <sqlMap resource="config/sql-mapping/old.xml"/>
+    <sqlMap resource="config/sql-mapping/mobile.xml"/>
+</sqlMapConfig>

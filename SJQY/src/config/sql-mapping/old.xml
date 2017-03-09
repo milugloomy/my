@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="old">
+	<select id="queryValidCif" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(*) from b2c_cust_info where clientid=#value#
+	</select>
+	<select id="queryOldPUser"  resultClass="java.util.HashMap" parameterClass="java.lang.String" >
+		select a.NAME,a.SEX,a.CERT_TYPE,a.CERT_NO,a.PASSWORD,a.MOBILE,a.REVEMAIL,a.APPLY_DATE,
+			a.OPER_NO,a.MATCH_STATUS,a.OPEN_BRAN_CODE,a.EMAIL,a.ASSUM_STATUS,a.CN_NO,a.DN_NO,
+			b.SIGN_TYPE,b.PER_DEBIT_AMT,b.MAX_DEBIT_AMT,c.CUST_PHONE
+		 from b2c_cust_info a left join eb_pubpara b on a.CLIENTID=b.CLIENTID and b.CUST_TYPE='1'
+		 					  left join comr_cifbinfo c on a.CLIENTID=c.CUST_NO
+		 where a.CLIENTID=#value#
+	</select>
+	<select id="queryOldPAccount"  resultClass="java.util.HashMap" parameterClass="java.lang.String" >
+		select * from b2c_acct_info where clientid=#value#
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="queryValidECif1"  resultClass="java.lang.Integer" parameterClass="java.lang.String" >
+		select count(*) from ecif a,ecifac b where a.cif_status!=2 
+			and a.cif_masterid=b.ac_masterid and a.cif_masterid=#value#
+	</select>
+	<select id="queryValidECif2"  resultClass="java.lang.Integer" parameterClass="java.lang.String" >
+		select count(*) from ibs_epub_cif a,ibs_epub_ac b where a.cif_status!=2 
+			and a.cif_masterid=b.ac_masterid and a.cif_masterid=#value#
+	</select>
+	<select id="queryOldECif1"  resultClass="java.util.HashMap" parameterClass="java.lang.String" >
+		select * from ecif  where cif_masterid=#value# and cif_status!=2
+	</select>
+	<select id="queryOldECif2"  resultClass="java.util.HashMap" parameterClass="java.lang.String" >
+		select * from ibs_epub_cif  where cif_masterid=#value# and cif_status!=2
+	</select>
+	<select id="queryOldEUser"  resultClass="java.util.HashMap" parameterClass="java.lang.String" >
+		select * from euser where cif_masterid=#value# 
+			union
+    	select a.*,'','','' from ibs_epub_user a where cif_masterid=#value# and not exists 
+        	(select * from euser b where a.cif_masterid=b.cif_masterid and a.user_loginid=b.user_loginid)
+	</select>
+	<select id="queryOldEAccount"  resultClass="java.util.HashMap" parameterClass="java.lang.String" >
+		select * from ecifac where ac_masterid=#value# and ac_masterid=cif_masterid
+			union
+		select * from ibs_epub_ac a where a.ac_masterid=#value# and a.ac_masterid=a.cif_masterid and not exists
+			(select * from ecifac b where a.acno=b.acno and a.ac_masterid=b.ac_masterid)
+	</select>
+	<select id="queryEUserAcct"  resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+		select a.* from euserac a,ecifac b where a.cif_masterid=b.ac_masterid 
+			and a.acno=b.acno and a.cif_masterid=#CIFNO# and a.user_loginid=#USERID# 
+    			union 
+		select a.* from ibs_epub_userac a,ibs_epub_ac b where a.cif_masterid=b.ac_masterid 
+			and a.acno=b.acno and a.cif_masterid=#CIFNO# and a.user_loginid=#USERID#
+	</select>
+	<select id="queryEAuthCifNo" resultClass="java.lang.String">
+		select distinct cif_masterid from eauthctrl
+	</select>
+	<select id="queryEAuthModule" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select distinct module from eauthctrl where cif_masterid=#value#
+	</select>
+	<select id="queryOldEAuth" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		select * from eauthctrl where cif_masterid=#CifNo# and module=#Module# order by amount
+	</select>
+	<select id="queryEsettlement" resultClass="java.util.HashMap">
+		select * from esettlement
+	</select>
+	<select id="queryOldE2PLimit" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		select * from transferlimit where masterid = #CifNo# and acno = #AcNo#
+	</select>
+	<select id="queryOldEntFee" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		select * from entfee where masterid = #CifNo# and acctno = #AcNo#
+	</select>
+	
+	
+	<select id="queryMoveCifCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+		select count(*) from extr_mbcustinfo where cust_no not in (select cifno from ecif.MTMPDATA )
+	</select>
+	<select id="queryMoveCif" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		<![CDATA[
+		select * from (
+			select rownum rn,cust_NO from extr_mbcustinfo where cust_no not in (select cifno from ecif.MTMPDATA )
+		) where rn>#StartNum# and rn<=#EndNum#
+		]]>
+	</select>
+</sqlMap>

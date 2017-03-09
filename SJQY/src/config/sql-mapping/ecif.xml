@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="ecif">
+	<select id="queryCifSeq"  resultClass="java.lang.String">
+		select CIFSEQ.NEXTVAL from dual
+	</select>
+	<select id="queryUserSeq"  resultClass="java.lang.String">
+		select USERSEQ.NEXTVAL from dual
+	</select>
+	<select id="queryAcSeq"  resultClass="java.lang.String">
+		select ACSEQ.NEXTVAL from dual
+	</select>
+	<select id="queryRoleSeq"  resultClass="java.lang.String">
+		select ROLESEQ.NEXTVAL from dual
+	</select>
+	<select id="queryPCifSeq"  resultClass="java.lang.String">
+		select PCIFSEQ.NEXTVAL from dual
+	</select>
+	
+	<select id="queryTotalMCif" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from ecusrmch em,ecusr e, MTMPDATA m where em.mchannelid=#MChannel# and e.USERSEQ=em.USERSEQ and m.CIFSEQ = e.CIFSEQ
+	</select>
+	<select id="querySecMcif" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		<![CDATA[select * from (select rownum rn,a.password,c.cifseq,c.cifno 
+              from ecif.ecusrmch a,ecif.ecusr b,ecif.ecextcifno c,MTMPDATA m
+              where mchannelid=#MChannel# and a.userseq=b.userseq and b.cifseq=c.cifseq and m.CIFSEQ = b.CIFSEQ)x 
+       	where rn>#StartNum# and rn<=#EndNum#]]>
+	</select>
+	
+	<select id="queryTotalPCif" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from ecusrmch em,ecusr e, PTMPDATA m where em.mchannelid=#MChannel# and e.USERSEQ=em.USERSEQ and m.CIFSEQ = e.CIFSEQ
+	</select>
+	<select id="querySecPcif" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		<![CDATA[select * from (select rownum rn,a.password,c.cifseq,c.cifno 
+              from ecif.ecusrmch a,ecif.ecusr b,ecif.ecextcifno c,PTMPDATA m
+              where mchannelid=#MChannel# and a.userseq=b.userseq and b.cifseq=c.cifseq and m.CIFSEQ = b.CIFSEQ)x 
+       	where rn>#StartNum# and rn<=#EndNum#]]>
+	</select>
+	
+	<select id="queryCifSeqByCifNo"  resultClass="java.lang.String" parameterClass="java.lang.String">
+       <![CDATA[
+		select CIFSEQ from ECEXTCIFNO where CIFNO=#value# and ROWNUM<=1
+       ]]>
+	</select>
+	<select id="queryUserSeqByUserIdAndCifSeq"  resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		select USERSEQ from ECUSR where USERID=#USERID# and CIFSEQ=#CIFSEQ#
+	</select>
+	<select id="queryUserSeqByCifSeq"  resultClass="java.lang.String" parameterClass="java.lang.String">
+		select USERSEQ from ECUSR where CIFSEQ=#value#
+	</select>
+	<select id="queryUserSeqByCifNo"  resultClass="java.lang.String" parameterClass="java.lang.String">
+		select b.USERSEQ from ECEXTCIFNO a,ECUSR b where a.CIFNO=#value# and a.CIFSEQ=b.CIFSEQ
+	</select>
+	<select id="queryUserSeqCifSeqByCifNo"  resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select b.USERSEQ,b.CIFSEQ from ECEXTCIFNO a,ECUSR b where a.CIFNO=#value# and a.CIFSEQ=b.CIFSEQ
+	</select>
+	<select id="queryCifSeqFromTmpdata"  resultClass="java.lang.String" parameterClass="java.lang.String">
+		select CIFSEQ from TMPDATA where CIFNO=#value#
+	</select>
+	<select id="queryCifNameByCifSeq"  resultClass="java.lang.String" parameterClass="java.lang.String">
+		select CIFNAME from ECCIF where CIFSEQ=#value#
+	</select>
+	<select id="queryAcSeqByAcNo"	resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		select ACSEQ from ECACCT where ACNO=#ACNO# and CIFSEQ=#CIFSEQ#
+	</select>
+	<select id="queryAcSeqByAcNo2"	resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		select a.ACSEQ from ECACCT a,ECEXTCIFNO b where a.CIFSEQ=b.CIFSEQ and b.CIFNO=#CIFNO# and a.ACNO=#ACNO#
+	</select>
+	<select id="queryAcseqByCifNo"	resultClass="java.lang.String" parameterClass="java.lang.String">
+		select a.ACSEQ from ECACCT a,ECEXTCIFNO b where a.CIFSEQ=b.CIFSEQ and b.CIFNO=#value#
+	</select>
+	<select id="queryUserAuthMod"	resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		select * from ECUSRAUTHMOD where userSeq#value# and authMod='O'
+	</select>
+	
+	<select id="queryMUserRecord"  resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+       select count(*) as RECORD from MTMPDATA where USERFLAG=#FLAG#
+	</select>
+	<select id="queryMAccountRecord"  resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+       select count(*) as RECORD from MTMPDATA where ACCOUNTFLAG=#FLAG#
+	</select>
+	<select id="queryMPayeeRecord"  resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+       select count(*) as RECORD from MTMPDATA where PAYEEFLAG=#FLAG#
+	</select>
+	<select id="queryPUserRecord"  resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+       select count(*) as RECORD from PTMPDATA where USERFLAG=#FLAG#
+	</select>
+	<select id="queryPAccountRecord"  resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+       select count(*) as RECORD from PTMPDATA where ACCOUNTFLAG=#FLAG#
+	</select>
+	<select id="queryPPayeeRecord"  resultClass="java.lang.String" parameterClass="java.util.HashMap" >
+       select count(*) as RECORD from PTMPDATA where PAYEEFLAG=#FLAG#
+	</select>
+	
+	<select id="queryMUserTmpData" resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+       <![CDATA[
+       select CIFNO,CIFSEQ,NEWCIF from MTMPDATA where USERFLAG=#Flag# and ROWNUM <=#Number#
+       ]]>
+	</select>
+	<select id="queryMAccountTmpData" resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+       <![CDATA[
+       select CIFNO,CIFSEQ,NEWCIF from MTMPDATA where ACCOUNTFLAG=#Flag# and ROWNUM <=#Number#
+       ]]>
+	</select>
+	<select id="queryMPayeeTmpData" resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+       <![CDATA[
+       select CIFNO,CIFSEQ,NEWCIF from MTMPDATA where PAYEEFLAG=#Flag# and ROWNUM <=#Number#
+       ]]>
+	</select>
+	<select id="queryPUserTmpData" resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+       <![CDATA[
+       select CIFNO,CIFSEQ,NEWCIF from PTMPDATA where USERFLAG=#Flag# and ROWNUM <=#Number#
+       ]]>
+	</select>
+	<select id="queryPAccountTmpData" resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+       <![CDATA[
+       select CIFNO,CIFSEQ,NEWCIF from PTMPDATA where ACCOUNTFLAG=#Flag# and ROWNUM <=#Number#
+       ]]>
+	</select>
+	<select id="queryPPayeeTmpData" resultClass="java.util.HashMap" parameterClass="java.util.HashMap" >
+       <![CDATA[
+       select CIFNO,CIFSEQ,NEWCIF from PTMPDATA where PAYEEFLAG=#Flag# and ROWNUM <=#Number#
+       ]]>
+	</select>
+	
+	<insert id="insertStartTime" parameterClass="java.util.HashMap">
+		insert into TMPTIME(STARTTIME,TRANSCODE,T_INDEX) values(#StartTime#,#TransCode#,#Index#)
+	</insert>
+	<update id="updateTMPTIME" parameterClass="java.util.HashMap">
+		update TMPTIME set ENDTIME=#EndTime#,TOTALMINUTE=#TotalMinute# where T_INDEX=#Index#
+	</update>
+	
+</sqlMap>

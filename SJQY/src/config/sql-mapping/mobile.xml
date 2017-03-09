@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="mobile">
+	<select id="queryTotalCif" resultClass="java.lang.Integer">
+		select count(*) from extr_mbcustinfo
+	</select>
+	<select id="querySecCif" resultClass="java.lang.String" parameterClass="java.util.HashMap">
+		<![CDATA[	
+		select a.cust_no from 
+	       (select rownum rn,cust_no from extr_mbcustinfo) a
+	    where rn>#StartNum# and rn<=#EndNum#
+		]]>	
+    </select>
+	<select id="queryValidCif" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(*) from extr_mbcustinfo where cust_no=#value#
+	</select>
+	<select id="queryOldMUser" resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select a.*,b.cust_name,b.cust_phone from extr_mbcustinfo a left join comr_cifbinfo b on a.cust_no=b.cust_no where a.cust_no=#value#
+	</select>
+	<select id="queryCifName" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select cust_name from comr_cifbinfo where cust_no=#value#
+	</select>
+	<select id="queryCifPhone" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select cust_phone from comr_cifbinfo where cust_no=#value#
+	</select>
+	<select id="queryCardRegDate" resultClass="java.sql.Date" parameterClass="java.lang.String">
+		select min(b.reg_date) from extr_mbcustinfo a,extr_mbacctinfo b 
+       		where a.cust_no=b.cust_no and a.cust_no=#value#
+	</select>
+	<select id="queryOldMAccount" resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select * from extr_mbacctinfo where cust_no=#value#
+	</select>
+	<select id="queryOldBankAcType" resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select bus_code,acct_attr,draw_mode from savb_basicinfo1 where acct_no=#value#
+	</select>
+	<select id="queryPDBCBranCode" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select open_bran_code from cadb_book where card_no=#value#
+	</select>
+	<select id="queryPCRCBranCode" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select b.our_bran_code from hisr_ccd_account a,comc_chgbran b 
+			where a.offset_bank_no=b.opp_bran_code and a.card_no=#value#
+	</select>
+	<select id="queryACBranCode" resultClass="java.lang.String" parameterClass="java.lang.String">
+		select acct_bran_code from savb_basicinfo1 where acct_no=#value#
+	</select>
+	<select id="queryOldMPayee" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		select * from recv_name_list a where clientid=#CifNo#
+			and not exists (select * from ecif.ecifcrossbankpayee b 
+				where rtrim(a.rcv_acct_no)=b.payeeacno and b.cifseq=#CifSeq#)
+			and not exists (select * from ecif.ecifbankinnerpayee c 
+				where rtrim(a.rcv_acct_no)=c.payeeacno and c.cifseq=#CifSeq#)
+	</select>
+	<select id="queryOldPay" resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select * from eb_agent where clientid=#value#
+	</select>
+	<select id="queryAllOldPay" resultClass="java.util.HashMap">
+		select * from eb_agent
+	</select>
+</sqlMap>

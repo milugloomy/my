@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Main-Class: common.MainEntry
+Class-Path: lib/mail.jar 
+ lib/sqlitejdbc-v056.jar 
+ lib/gson-2.4.jar 
+ lib/jsoup-1.9.2.jar 
+

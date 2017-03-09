@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="eip">
+	<select id="queryAllDept"  resultClass="java.util.HashMap">
+		select DEPTSEQ,DEPTID,DEPTNAME,DEPTSTATE,DEPTTYPE,DEPTLEVEL,PARENTDEPTSEQ from DEPT
+	</select>
+	<select id="queryAllCifLimit"  resultClass="java.util.HashMap">
+		select * from MCCIFLIMIT
+	</select>
+	<select id="queryAllEBankProd"  resultClass="java.util.HashMap">
+		select * from BANKPROD where moduleid='ent'
+	</select>
+	
+	<select id="queryAllCITYANDPROV"   resultClass="java.util.HashMap">
+        select a.CITYCD,a.CITYNAME,a.PROVCD,b.PROVNAME from mcapscity a, mcapsprovince b where a.PROVCD = b.PROVCD
+	</select>
+	<select id="queryAllBANKNAME"   resultClass="java.util.HashMap">
+        select BANKNO,BANKNAME from mcapsbank
+	</select>
+	<select id="queryApsRtgsNodeByLName"  resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select * from APSRTGSNODE where LNAME=#value# and status='1'
+	</select>
+	<select id="queryApsRtgsNode"  resultClass="java.util.HashMap" parameterClass="java.lang.String">
+		select * from MCAPSRTGSNODE where BANKCODE=#value# and status='1'
+	</select>
+	
+	<select id="queryJnlNo"  resultClass="java.lang.String">
+		select MCJNLNO.NEXTVAL from dual
+	</select>
+</sqlMap>

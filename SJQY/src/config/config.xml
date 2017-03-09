@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	xmlns:context="http://www.springframework.org/schema/context"
+	default-autowire="byName">
+	
+	<context:component-scan base-package="com.sjqy.common" />
+	<context:component-scan base-package="com.sjqy.eibs" />
+	<context:component-scan base-package="com.sjqy.pibs" />
+	<context:component-scan base-package="com.sjqy.pmbs" />
+	<context:component-scan base-package="com.sjqy.psms" />
+	<context:component-scan base-package="com.sjqy.query" /> 
+	
+	<bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:/config/dsconfig.properties" />
+<!-- 		<property name="location" value="classpath:/config/dsconfiguat.properties" /> -->
+<!-- 		<property name="location" value="classpath:/config/dsconfigdev.properties" /> -->
+	</bean>
+
+	<!-- 数据源 -->
+	<bean id="SqlMapOld" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="dataSource" ref="DataSourceOld" />		
+		<property name="sqlMapClient" ref="sqlMapClient" />		
+	</bean>
+	<bean id="SqlMapMobile" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="dataSource" ref="DataSourceMobile" />		
+		<property name="sqlMapClient" ref="sqlMapClient" />		
+	</bean>
+	<bean id="SqlMapEcif" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="dataSource" ref="DataSourceEcif" />		
+		<property name="sqlMapClient" ref="sqlMapClient" />		
+	</bean>
+	<bean id="SqlMapEip" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="dataSource" ref="DataSourceEip" />		
+		<property name="sqlMapClient" ref="sqlMapClient" />		
+	</bean>
+	<bean id="SqlMapIbs" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="dataSource" ref="DataSourceIbs" />		
+		<property name="sqlMapClient" ref="sqlMapClient" />		
+	</bean>
+	
+	<bean name="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<!-- <property name="configLocations">
+			<list>
+				<value>classpath:/config/sql-mapping/old.xml</value>
+				<value>classpath:/config/sql-mapping/mobile.xml</value>
+				<value>classpath:/config/sql-mapping/ecif.xml</value>
+				<value>classpath:/config/sql-mapping/eip.xml</value>
+				<value>classpath:/config/sql-mapping/ibs.xml</value>
+			</list>
+		</property> -->
+		<property name="configLocation" value="classpath:/config/ibatisSqlMapConfig.xml" />
+		<property name="lobHandler" ref="lobHandler" />		
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/>
+	
+	<!--老网银数据源 -->
+	<bean id="DataSourceOld" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${DataSourceOld.driverClassName}" />		
+		<property name="url" value="${DataSourceOld.url}" />		
+		<property name="username" value="${DataSourceOld.username}" />		
+		<property name="password" value="${DataSourceOld.password}" />		
+		<property name="maxActive" value="${DataSource.maxActive}" />		
+		<property name="maxIdle" value="${DataSource.maxIdle}" />	
+	</bean>
+	<!--手机银行数据源 -->
+	<bean id="DataSourceMobile" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${DataSourceMobile.driverClassName}" />		
+		<property name="url" value="${DataSourceMobile.url}" />		
+		<property name="username" value="${DataSourceMobile.username}" />		
+		<property name="password" value="${DataSourceMobile.password}" />		
+		<property name="maxActive" value="${DataSource.maxActive}" />		
+		<property name="maxIdle" value="${DataSource.maxIdle}" />	
+	</bean>
+	<!-- 新网银数据源 -->
+	<bean id="DataSourceEcif" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${DataSourceEcif.driverClassName}" />		
+		<property name="url" value="${DataSourceEcif.url}" />		
+		<property name="username" value="${DataSourceEcif.username}" />		
+		<property name="password" value="${DataSourceEcif.password}" />		
+		<property name="maxActive" value="${DataSource.maxActive}" />		
+		<property name="maxIdle" value="${DataSource.maxIdle}" />	
+	</bean>
+	<bean id="DataSourceEip" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${DataSourceEip.driverClassName}" />		
+		<property name="url" value="${DataSourceEip.url}" />		
+		<property name="username" value="${DataSourceEip.username}" />		
+		<property name="password" value="${DataSourceEip.password}" />		
+		<property name="maxActive" value="${DataSource.maxActive}" />		
+		<property name="maxIdle" value="${DataSource.maxIdle}" />	
+	</bean>
+	<bean id="DataSourceIbs" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${DataSourceIbs.driverClassName}" />		
+		<property name="url" value="${DataSourceIbs.url}" />		
+		<property name="username" value="${DataSourceIbs.username}" />		
+		<property name="password" value="${DataSourceIbs.password}" />		
+		<property name="maxActive" value="${DataSource.maxActive}" />		
+		<property name="maxIdle" value="${DataSource.maxIdle}" />	
+	</bean>
+	
+</beans>

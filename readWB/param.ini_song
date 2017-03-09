@@ -1,0 +1,11 @@
+#微博首页地址(多个url写多行)
+url=http://weibo.com/laogaowudao?is_all=1
+url=http://weibo.com/daitoudage777wx?is_all=1
+url=http://weibo.com/fnlady?is_all=1
+url=http://weibo.com/u/2014433131?is_all=1
+url=http://weibo.com/peterlinqi?is_all=1
+#邮箱地址(多个mailTo写多行)
+#mailTo=362754549@qq.com
+mailTo=568811784@qq.com
+#10 minutes
+interval=10
