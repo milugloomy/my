@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	 xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd"
+	xmlns:context="http://www.springframework.org/schema/context"
+	default-autowire="byName">
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:spring-config.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 消息国际化配置 -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:spring-config</value>
+			</list>
+		</property>
+        <property name="defaultEncoding" value="UTF-8"/>  
+		<property name="cacheSeconds" value="600" />
+	</bean>
+	
+	<!--Http返回数据编码管理  -->
+	<bean class ="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" > 
+        <property name="messageConverters">             
+            <list>                 
+			<!-- 设置返回字符串编码 -->                
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">                     
+					<property name = "supportedMediaTypes">
+		                <list>                             
+							<value>application/x-www-form-urlencoded;charset=UTF-8</value>                         	
+						</list>                     
+					</property>                 
+				</bean>                
+			</list>         
+		</property>     
+	</bean>
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<import resource="/spring-hibernate.xml"/>
+	<import resource="/batch.xml"/>
+
+	<!-- 自动扫描注解 -->
+	<context:component-scan base-package="com.imgl.front.controller" />
+	<context:component-scan base-package="com.imgl.wx.business" />
+	<context:component-scan base-package="com.imgl.wx.service" />
+	<context:component-scan base-package="com.imgl.wx.common" />
+	<context:component-scan base-package="com.imgl.back.controller" />
+	<context:component-scan base-package="com.imgl.back.business" />
+	<context:component-scan base-package="com.imgl.back.service" />
+	
+	<!-- AOP -->
+	<aop:config>
+ 		<aop:pointcut id="backSessionControl"
+			expression="execution(* com.imgl.back.controller.*.*(..))" />
+ 		<aop:pointcut id="frontSessionControl"
+			expression="execution(* com.imgl.front.controller.*.*(..))" />
+
+		<aop:aspect ref="backSessionAop">
+			<aop:around pointcut-ref="backSessionControl" method="control" />
+		</aop:aspect>
+		<aop:aspect ref="frontSessionAop">
+			<aop:around pointcut-ref="frontSessionControl" method="control" />
+		</aop:aspect>
+	</aop:config>
+</beans>
+

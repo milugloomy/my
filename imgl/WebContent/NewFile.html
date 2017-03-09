@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="utf-8">
+<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    //异步提交表单
+    $("input[name='ajaxSubmit']").click(function(){
+    	var obj=$(this);
+    	var name=obj.parent().children("input[name='uploadFile']").val();
+    	name=name.substring(name.lastIndexOf("\\")+1);
+    	obj.parent().ajaxSubmit({
+            type:'post',
+            url:'/imgl/imgUpload.do',
+            success:function(data){
+            	obj.parent().children("img[name='showImg']").attr("src","/imgl/imgTemp/"+name);
+            	obj.parent().children("input[name='t1']").val(name);
+            },
+            error:function(XmlHttpRequest,textStatus,errorThrown){
+                console.log(XmlHttpRequest);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        },"json");
+    });
+});
+</script>
+</head>
+<body>
+<form id="formToUpdate1" method="post" action="#" enctype="multipart/form-data">
+	活动名：<input type="text" name="t1"><br/>
+	<input type="file" name="uploadFile"><br/> 
+	<input type="file" name="uploadFile"><br/> 
+	<input type="file" name="uploadFile"><br/> 
+	<input name="ajaxSubmit" type="button" value="上传"><br/>
+	<img name="showImg" />
+</form>
+<form id="formToUpdate2" method="post" action="#" enctype="multipart/form-data">
+	活动名：<input type="text" name="t1"><br/>
+	<input type="file" name="uploadFile"><br/> 
+	<input name="ajaxSubmit" type="button" value="上传"><br/>
+	<img name="showImg" />
+</form>
+<form id="formToUpdate3" method="post" action="#" enctype="multipart/form-data">
+	活动名：<input type="text" name="t1"><br/>
+	<input type="file" name="uploadFile"><br/> 
+	<input name="ajaxSubmit" type="button" value="上传"><br/>
+	<img name="showImg" />
+</form>
+</body>
+</html>

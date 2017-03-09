@@ -1,0 +1,89 @@
+@charset "utf-8";
+body { font-family: Microsoft Yahei, "宋体", Arial; padding-top: 50px; padding-bottom: 50px; }
+a, a:focus, a:hover { text-decoration: none; }
+.clear{ clear: both; }
+.header { background-color: #A30008; border-bottom: none; }
+.header .title, .header a, .header a:focus, .header a:hover, .header .btn { color: #fff; }
+.bg { background-color: #F3F3F3; }
+.bar-tab .tab-item.active, .bar-tab .tab-item:active { color: #A30008; }
+.h4 { font-weight: bold; margin-left: 10px; margin-right: 10px; }
+.segmented-control .control-item.active { border-bottom: 2px solid #A30008; background-color: #fff; color: #A30008; }
+.segmented-control .control-item { line-height: 20px; font-size: 14px; }
+.card { margin: 0; border: none; }
+.list { margin: 15px; border: none; background-color: #F3F3F3; }
+.list .media { background-color: #fff; margin-top: 15px; padding: 0; border: 1px solid #ddd; }
+.list .media>a { display: block; max-width: 100%; margin: 0; padding: 0; }
+.list p { margin: 0 10px 10px 10px; }
+.list .media .price1 { background-color: #555; color: #fff; font-size: 14px; display: inline-block; margin: 5px 0; line-height: 32px; text-indent: 50px; }
+.list .media .price2 { background-color: #A30008; color: #fff; font-size: 14px; display: inline-block; margin: 5px 0; line-height: 32px; text-indent: 0; border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
+.list .mark { position: absolute; top: 0px; left: 15px; width: 54px; height: 60px; background: url(../img/list1.png); }
+.list .mark p { color: #fff; line-height: 12px; font-size: 12px; margin: 6px 5px; text-align: center; }
+.info_panel { background-color: #fff; margin-bottom: 15px; padding: 0; border: 1px solid #ddd; }
+.info_panel p { margin: 0 10px 5px 10px; }
+.info_panel .price { margin: 0; color: #fff; text-align: center; }
+.info_panel .price a { color: #fff; display: block; line-height: 50px; background-color: #A30008; }
+.step .h4 { background-color: #F3F3F3; overflow: auto; margin: 15px 10px; padding: 10px; border-left: 3px solid #A30008; }
+.step .h4 p { margin: 0; }
+.step .row { margin: 0 10px; padding-bottom: 10px; }
+.step .row .col-xs-3 { font-size: 12px; text-align: center; padding-right: 5px; padding-left: 5px; }
+.step .row .col-xs-3 img { width: 48px; height: 48px; } /*1215加*/
+.items { margin-left: 0; margin-right: 0; }
+.items .media { padding: 10px 15px; font-size: 14px; }
+.items .media .media-left img { width: 64px; height: 64px; }
+.items .media .h4, .cards .media .h4, .groups .media .h4, .forms .media .h4 { font-size: 16px; font-weight: normal; margin-top: 0; margin-left: 0; margin-right: 0; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; }
+.items .media .price1 { margin: 5px 0; line-height: 24px; text-indent: 24px; }
+.items .media .price2 { margin: 5px 0; line-height: 24px; text-indent: 0; }
+.items .media .btns { border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px; }
+.items .media .btns a { margin-left: 10px; }
+.cards { margin-left: 0; margin-right: 0; margin-top: -1px; }
+.cards .media { padding: 5px 15px; font-size: 14px; width:100%; }
+.cards .media:first-child { margin-top: 0; }
+.cards .media .media-left img { width: 48px; height: 48px; }
+.cards .date { border-bottom: 1px solid #ddd; font-size: 12px; color: #555; margin-bottom: 10px; }
+.cards .media .btns { border-top: 1px solid #ddd; margin-top: 8px; padding-top: 8px; }
+.cards .media .btns a { margin-left: 10px; margin-bottom: 5px; background-color: #555; color: #fff; border: none; }
+.info { top: 50px; right: 20px; left: 20px; }
+.info .modal-header { color: #fff; line-height: 44px; border-bottom: none; background-color: #A30008; height: 44px; font-size: 16px; padding-top: 10px; }
+.info .table-view-cell { padding-right: 15px; }
+.order { font-size: 12px; border-top: 1px solid #ddd; }
+.order>tbody>tr>td { border-top: none; padding-top: 5px; padding-bottom: 0; }
+.order>tbody>tr>td:first-child { font-weight: bold; padding-left: 15px; padding-right: 0; min-width: 80px; }
+.order_h4 { background-color: #F3F3F3; margin: 15px 10px; padding: 10px; border-left: 3px solid #A30008; font-size: 14px; color: #777; font-weight: bold; line-height: 1.1; }
+.groups .media { background-color: #fff; padding: 15px 15px 10px 15px; }
+.groups .media .media-left img { width: 64px; height: 64px; }
+.groups .progress { margin-bottom: 5px; }
+.groups .btn { background-color: #A30008; color: #fff; border: none; line-height: 28px; margin-top: 10px; }
+.group .media { background-color: #fff; padding: 5px 10px; margin: 0; line-height: 32px; }
+.group .media img { width: 32px; height: 32px; }
+
+.order input, .order select { line-height: 24px; height: 28px; margin-bottom: 2px; }
+.order select { padding-top: 0; padding-bottom: 0; }
+
+/*.forms .checkbox input[type=checkbox] { top: 30%; }*/
+
+.forms .btn { color: #A30008; border: none; }
+.forms .media { padding-bottom: 5px; margin-top: 0; }
+.forms .media p { font-size: 12px; font-weight: normal; line-height: 16px; }
+.forms label { width: 100%; }
+.forms .def { position: absolute; bottom: -10px; right: 100px; width: 72px; height: 72px; filter: alpha(opacity=50); -moz-opacity: 0.5; opacity: 0.5; }
+.forms .media-body { display: inline-block; width: 80%; }
+.forms input[type=checkbox]+span { display: inline-block; height: 18px; width: 18px; border: 1px solid #555; border-radius: 50%; color: #fff; margin-right: 10px; font-size: 16px; }
+.forms input[type=checkbox]:checked+span { background-color: #A30008; border: 1px solid #A30008; }
+
+.has_nav { padding-bottom: 50px; }
+
+.pay .media { border-bottom: 1px solid #ddd; }
+.pay .label { padding: 2px 5px; font-weight: normal; }
+
+.hidden-input { opacity: 0; position: absolute; z-index: -1; }
+
+.pay .table-view-cell label { margin-bottom: 0; font-weight: normal; font-size: 14px; }
+.pay .table-view-cell label img { width: 28px; height: 28px; margin-right: 8px; }
+.pay input[type=radio]+span { display: inline-block; height: 18px; width: 18px; border: 1px solid #555; border-radius: 50%; color: #fff; margin-right: 10px; font-size: 16px; }
+.pay input[type=radio]:checked+span { background-color: #A30008; border: 1px solid #A30008; }
+
+.bg .logo { width: 96px; margin-top: 120px; margin-bottom: 10px; }
+.step0 { width: 90%; }
+.step0 .t { font-weight: bold; line-height: 32px; }
+
+.note0 p { margin-left: 10px; line-height: 28px; margin-bottom: 0; }
