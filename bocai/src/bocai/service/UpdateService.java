@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import bocai.common.Util;
+
 @Service("updateService")
 public class UpdateService {
 	
@@ -25,12 +27,8 @@ public class UpdateService {
 	
 	public void update(){
 		Calendar calendar = Calendar.getInstance();
-		int season=calendar.get(Calendar.YEAR);
 		int month=calendar.get(Calendar.MONTH);
-		//8月之前，算上个赛季
-		if(month<8){
-			season-=1;
-		}
+		int season=Util.getSeason();
 		update(season,month);
 	}
 	
