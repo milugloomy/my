@@ -28,15 +28,22 @@ public class NbaQryService {
 	}
 	
 	public Map<String,Object> totalRateQry(){
-		String baseSql=" select count(*) count from "
+		//总数
+		String totalSql="select count(*) from score where matchTime>?";
+		Integer total=jdbcTemplate.queryForObject(totalSql,new Object[]{
+				Util.seasonStart()
+		} ,Integer.class);
+		
+		//各胜率
+		String baseSql="select count(*) count from "
 				+"(select substring_index(score,'-',1) as homeScore,totalPoints,"
 				+"substring_index(score,'-',-1) as visitScore from score "
 				+"where matchTime>?) x ";
 		Map<String,Object> map=new HashMap<String,Object>();
-		String qrySql=baseSql+"where CONVERT(homeScore,DECIMAL)>CONVERT(visitScore,DECIMAL)"
-				+" union"+baseSql+"where CONVERT(homeScore,DECIMAL)<CONVERT(visitScore,DECIMAL)"
-				+" union"+baseSql+"where CONVERT(homeScore+visitScore,DECIMAL)>CONVERT(totalPoints,DECIMAL)"
-				+" union"+baseSql+"where CONVERT(homeScore+visitScore,DECIMAL)<CONVERT(totalPoints,DECIMAL)";
+		String qrySql=baseSql+" where CONVERT(homeScore,DECIMAL)>CONVERT(visitScore,DECIMAL)"
+				+" union "+baseSql+" where CONVERT(homeScore,DECIMAL)<CONVERT(visitScore,DECIMAL)"
+				+" union "+baseSql+" where CONVERT(homeScore+visitScore,DECIMAL)>CONVERT(totalPoints,DECIMAL)"
+				+" union "+baseSql+" where CONVERT(homeScore+visitScore,DECIMAL)<CONVERT(totalPoints,DECIMAL)";
 		List<Integer> list=jdbcTemplate.queryForList(qrySql,Integer.class, 
 				new Object[]{Util.seasonStart(),Util.seasonStart(),Util.seasonStart(),Util.seasonStart()});
 		int homeCount=list.get(0);
@@ -47,14 +54,33 @@ public class NbaQryService {
 		map.put("visitCount", visitCount);
 		map.put("smallCount", smallCount);
 		map.put("bigCount", bigCount);
-		Double homeRate=new Double(df.format(100.0*homeCount/(homeCount+visitCount)));
-		Double visitRate=new Double(df.format(100.0*visitCount/(homeCount+visitCount)));
-		Double smallRate=new Double(df.format(100.0*smallCount/(smallCount+bigCount)));
-		Double bigRate=new Double(df.format(100.0*bigCount/(smallCount+bigCount)));
+		Double homeRate=new Double(df.format(100.0*homeCount/total));
+		Double visitRate=new Double(df.format(100.0*visitCount/total));
+		Double smallRate=new Double(df.format(100.0*smallCount/total));
+		Double bigRate=new Double(df.format(100.0*bigCount/total));
 		map.put("homeRate", homeRate);
 		map.put("visitRate", visitRate);
 		map.put("smallRate", smallRate);
 		map.put("bigRate", bigRate);
+		
+		//让分胜负
+		String letBaseSql=" select count(*) count from "
+				+"(select substring_index(score,'-',1)+letpoints as homeScore,"
+				+"substring_index(score,'-',-1) as visitScore from score "
+				+"where matchTime>?) x ";
+		String letQrySql=letBaseSql+" where homeScore>visitScore"
+				+" union "+letBaseSql+" where homeScore<visitScore";
+		List<Integer> letList=jdbcTemplate.queryForList(letQrySql,Integer.class, 
+				new Object[]{Util.seasonStart(),Util.seasonStart()});
+		int letHomeCount=letList.get(0);
+		int letVisitCount=letList.get(1);
+		map.put("letHomeCount", letHomeCount);
+		map.put("letVisitCount", letVisitCount);
+		Double letHomeRate=new Double(df.format(100.0*letHomeCount/total));
+		Double letVisitRate=new Double(df.format(100.0*letVisitCount/total));
+		map.put("letHomeRate", letHomeRate);
+		map.put("letVisitRate", letVisitRate);
+
 		return map;
 	}
 	

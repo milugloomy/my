@@ -23,7 +23,7 @@ public class NbaQryController {
 	private NbaQryService nbaQryService;
 	private Gson gson=new Gson();
 	
-	@RequestMapping(method ={RequestMethod.POST},value = "/totalRateQry")
+	@RequestMapping(value = "/totalRateQry")
 	@ResponseBody
 	public String totalRateQry(HttpServletRequest request,HttpServletResponse response){
 		Map<String,Object> map=nbaQryService.totalRateQry();

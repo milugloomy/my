@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="renderer" content="webkit|ie-comp|ie-stand">
-		<title>市级招标公告</title>
-		<link rel="stylesheet" href="css/bootstrap.css"></link>
-	</head>
-	<body>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+   	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>市级招标公告</title>
+	<link rel="stylesheet" href="css/bootstrap.css"></link>
+</head>
+<body>
 	<div class="container-fluid" id="divBody">
 		<div class="page-header">
-	  		<h1>湖北省政府采购网<small>市级招标公告</small></h1>
+	  		<h2>湖北省政府采购网<small>市级招标公告</small></h2>
 		</div>
 		<div class="input-group" id="inputGroup">
 		  	<span class="input-group-addon" id="basic-addon3">搜索</span>
@@ -17,11 +18,12 @@
 		  		v-model="searchWd" aria-describedby="basic-addon3">
 		</div>
 		<div class="list-group" id="listGroup">
-  			<a v-for="row in list" v-show="row.show" v-bind:href="row.href" target="_blank" class="list-group-item" > 
-    			<span style="color:blue">[{{row.type}}]</span>
-    			<span v-html="row.showName"></span>
-    			<span style="text-align:right;float:right;">{{row.time}}</span>
-  			</a>
+ 			<a v-for="row in list" v-show="row.show" v-bind:href="row.href" target="_blank" class="list-group-item" 
+	 			style="display:-webkit-box;"> 
+	   			<span style="color:blue">[{{row.type}}]</span>
+	   			<span v-html="row.showName"></span>
+	   			<span style="text-align:right;float:right;">{{row.time}}</span>
+ 			</a>
 			<div class="panel-footer" style="text-align: center">共{{total}}条</div>
 		</div>
 	</div>

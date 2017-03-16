@@ -28,7 +28,7 @@ public class CountController {
 	@Autowired
 	private CountService countService;
 	
-	@RequestMapping(method ={RequestMethod.POST},value = "/count")
+	@RequestMapping(value = "/count")
 	@ResponseBody
 	public String count(HttpServletRequest request,HttpServletResponse response){
 		String bocaiType=request.getParameter("bocaiType");

@@ -13,7 +13,7 @@ public class Util {
 	public static int getSeason(){
 		Calendar calendar = Calendar.getInstance();
 		int season=calendar.get(Calendar.YEAR);
-		int month=calendar.get(Calendar.MONTH);
+		int month=calendar.get(Calendar.MONTH)+1;
 		//8月之前，算上个赛季
 		if(month<8){
 			season-=1;

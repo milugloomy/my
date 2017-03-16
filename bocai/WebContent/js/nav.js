@@ -13,11 +13,11 @@ Vue.component('mynav', {
 	//v-bind:class 中 样式名带-的 需加单引号
 	template: '<nav class="mui-bar mui-bar-tab">\
 		    <a class="mui-tab-item" href="counter.html" v-bind:class="{\'mui-active\':menu1}">\
-				<span class="mui-icon mui-icon-home"></span>\
+				<span class="mui-icon mui-icon-plus"></span>\
 				<span class="mui-tab-label">{{menuName1}}</span>\
 			</a>\
 			<a class="mui-tab-item" href="nbaQry.html" v-bind:class="{\'mui-active\':menu2}">\
-				<span class="mui-icon mui-icon-gear"></span>\
+				<span class="mui-icon mui-icon-search"></span>\
 				<span class="mui-tab-label">{{menuName2}}</span>\
 			</a>\
 			<a class="mui-tab-item" v-bind:class="{\'mui-active\':menu3}">\
@@ -30,7 +30,7 @@ Vue.component('mynav', {
 		return{
 			menuName1:'计算器',
 			menuName2:'查询',
-			menuName3:'我的'
+			menuName3:'我'
 		}
 	}
 });
