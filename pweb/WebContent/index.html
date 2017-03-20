@@ -10,8 +10,12 @@
 <body>
 	<div class="container-fluid" id="divBody">
 		<div class="page-header">
-	  		<h2>湖北省政府采购网<small>市级招标公告</small></h2>
+	  		<h4>市级招标公告</h4>
 		</div>
+		<ul class="nav nav-tabs" >
+			<li role="presentation" v-bind:class="active1"><a id="tab1" href="javascript:;" v-on:click="tabChange">首页</a></li>
+			<li role="presentation" v-bind:class="active2"><a id="tab2" href="javascript:;" v-on:click="tabChange">近一周武汉市</a></li>
+		</ul>
 		<div class="input-group" id="inputGroup">
 		  	<span class="input-group-addon" id="basic-addon3">搜索</span>
 		  	<input type="text" class="form-control" id="basic-url" placeholder="请输入搜索关键字"
@@ -29,20 +33,61 @@
 	</div>
 <script src="js/vue.js"></script>
 <script src="js/jquery.js"></script>
+<script src="js/layer.js"></script>
 <script type="text/javascript">
 var lg=new Vue({
 	el:"#divBody",
-	beforeCreate:function(){
+	mounted:function(){
+		var that=this;
+		var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
 		$.post("MainServlet",function(data){
+			layer.close(loadLayer);
 			for(var i=0;i<data.length;i++){
 				data[i].show=true;
 				data[i].showName=data[i].name;//显示的内容
 			}
-			lg.list=data;
-			lg.total=data.length;
+			that.list1=data;
+			that.tabChange();
 		},"json");
 	},
+	methods:{
+		tabChange:function(event){
+			var id;
+			if(event==undefined)
+				id="tab1";
+			else
+				id=event.currentTarget.getAttribute('id');
+			if(id=="tab1"){
+				this.active1="active";
+				this.active2="";
+				this.list=this.list1;
+			}else{
+				this.active2="active";
+				this.active1="";
+				if(this.list2==null){
+					var that=this;
+					var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+					$.post("LastWeekServlet",function(data){
+						layer.close(loadLayer);
+						for(var i=0;i<data.length;i++){
+							data[i].show=true;
+							data[i].showName=data[i].name;//显示的内容
+						}
+						that.list2=data;
+						that.list=that.list2;
+					},"json");
+				}else{
+					this.list=this.list2;
+				}
+			}
+		}
+	},
 	watch: {
+		//list发生变化		
+		list:function(){
+			lg.total=this.list.length
+		},
+		//searchWd发生变化
 		searchWd: function (val) {
 			var vArr=val.split("");
 			this.total=0;
@@ -83,9 +128,13 @@ var lg=new Vue({
 		}
 	},
 	data:{
-		list:[],
+		list:[],//显示list
+		list1:null,//首页list
+		list2:null,//近一周list
 		searchWd:"",
-		total:0
+		total:0,
+		active1:"active",
+		active2:""
 	}
 });
 </script> 

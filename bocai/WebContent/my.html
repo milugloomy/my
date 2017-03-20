@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>我的</title>
+    <link href="css/mui.css" rel="stylesheet"/>
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+  	<style type="text/css">
+    	.font18{
+			font-size:18px;
+			font-family: "微软雅黑";
+		}
+		.button_left{
+			font-size:18px;
+			line-height:2;
+			margin-left:3%;
+			width:66%;
+		}
+		.button_right{
+			font-size:18px;
+			line-height:2;
+			margin-right:3%;
+			width:26%;
+			background-color:#5CE665;
+		}
+		table td{
+			padding:2px 3px;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+    	<h1 class="mui-title">我的</h1>
+	</header>
+	<div class="mui-content" id="teamContent">
+		<h5 class="mui-content-padded font18">球队查询</h5>
+		<button v-on:click="chooseTeam" class="mui-btn mui-btn-primary button_left" 
+			v-html="team">
+		</button>
+		<button v-on:click="qryTeam" class="mui-btn mui-btn-primary button_right">
+			查询
+		</button>
+		<ul class="mui-table-view" id="teamDiv" style="display: none;">
+	    	<li class="mui-table-view-cell">主场得失分：<span style="padding-left:1%">{{homeAvg}} / {{homeLostAvg}}</span></li>
+        	<li class="mui-table-view-cell">客场得失分：<span style="padding-left:1%">{{visitAvg}} / {{visitLostAvg}}</span></li>
+	    	<li class="mui-table-view-cell">近五场客场：<span style="padding-left:1%">{{last5HomeAvg}} / {{last5HomeLostAvg}}</span></li>
+	    	<li class="mui-table-view-cell">近五场主场：<span style="padding-left:1%">{{last5VisitAvg}} / {{last5VisitLostAvg}}</span></li>
+	    	<li class="mui-table-view-cell mui-collapse">
+				<a class="mui-navigate-right" href="javascript:;" style="color:cornflowerblue">近5场比分：</a>
+				<div class="" style="font-size:14px;text-align:center">
+					<template v-for="game in games">
+						<div class="mui-input-row" style="color:#020a97">
+							{{game.matchTime}}
+						</div>
+						<table align="center">
+							<tr style="border-bottom: 1px solid #b9b9b9;">
+								<template v-if="game.isHome==true">
+									<td width="40%" style="font-weight: bold">{{game.homeTeam}}</td>
+									<td width="20%" nowrap="nowrap" style="color:red"> {{game.score}} </td>
+									<td width="40%">{{game.visitTeam}}</td>
+								</template>
+								<template v-if="game.isHome==false">
+									<td width="40%">{{game.homeTeam}}</td>
+									<td width="20%" nowrap="nowrap" style="color:red"> {{game.score}} </td>
+									<td width="40%" style="font-weight: bold">{{game.visitTeam}}</td>
+								</template>
+							</tr>
+						</table>
+					</template>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<h5 class="mui-content-padded font18">公式计算器</h5>
+	<div class="mui-content" style="padding-bottom:55px;" id="muiContent">
+		
+	</div>
+	<div id="nav">
+		<mynav menu3="true"></mynav>
+	</div>
+	
+<script src="js/vue.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/mui.js"></script>
+<script src="js/mui.picker.js"></script>
+<script src="js/mui.poppicker.js"></script>
+<script src="js/teamData.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+var tc=new Vue({
+	el:"#teamContent",
+	beforeCreate:function(){
+		$.post("totalRateQry.do",function(data){
+			tc.bigRate=data.bigRate+"%（"+data.bigCount+"场）";
+			tc.smallRate=data.smallRate+"%（"+data.smallCount+"场）";
+			tc.homeRate=data.homeRate+"%（"+data.homeCount+"场）";
+			tc.visitRate=data.visitRate+"%（"+data.visitCount+"场）";
+			tc.letHomeRate=data.letHomeRate+"%（"+data.letHomeCount+"场）";
+			tc.letVisitRate=data.letVisitRate+"%（"+data.letVisitCount+"场）";
+		},"json");
+	},
+	data:{
+		team:"球队数据&nbsp;&nbsp;&nbsp;﹀",
+		teamPicker:(function(){
+			var t = new mui.PopPicker({
+				layer: 2,
+			});
+			t.setData(teamData);
+			return t;
+		})(),
+		homeAvg:"",
+		homeLostAvg:"",
+		visitAvg:"",
+		visitLostAvg:"",
+		last5HomeAvg:"",
+		last5HomeLostAvg:"",
+		last5VisitAvg:"",
+		last5VisitLostAvg:"",
+		games:""
+	},
+	methods:{
+		chooseTeam:function(event){
+//			var button=event.currentTarget;
+			tc.teamPicker.show(function(items) {
+				tc.team=items[1].text;
+			});
+		},
+		qryTeam:function(event){
+			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+			$.post("teamRateQry.do",{teamName:tc.team},function(data){
+				layer.close(loadLayer);
+				tc.homeAvg=data.homeAvg;
+				tc.homeLostAvg=data.homeLostAvg;
+				tc.visitAvg=data.visitAvg;
+				tc.visitLostAvg=data.visitLostAvg;
+				tc.last5HomeAvg=data.last5HomeAvg;
+				tc.last5HomeLostAvg=data.last5HomeLostAvg;
+				tc.last5VisitAvg=data.last5VisitAvg;
+				tc.last5VisitLostAvg=data.last5VisitLostAvg;
+				tc.games=data.last5Game;
+				//渲染完成再弹出
+				Vue.nextTick(function(){
+					var teamLayer=layer.open({
+						title:"<div class='font18'>球队战绩</div>",
+						btn: ["确定"],
+						btn1:function(){
+							layer.close(teamLayer);
+						},
+						cancel:function(){
+							layer.close(teamLayer);
+						},
+						type:1,
+						content:$("#teamDiv"),
+						area:"95%"
+					});
+				});
+			},"json")
+		}
+	}
+});
+</script>
+</body>
+</html>

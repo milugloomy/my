@@ -20,7 +20,7 @@ Vue.component('mynav', {
 				<span class="mui-icon mui-icon-search"></span>\
 				<span class="mui-tab-label">{{menuName2}}</span>\
 			</a>\
-			<a class="mui-tab-item" v-bind:class="{\'mui-active\':menu3}">\
+			<a class="mui-tab-item" href="my.html" v-bind:class="{\'mui-active\':menu3}">\
 				<span class="mui-icon mui-icon-person"></span>\
 				<span class="mui-tab-label">{{menuName3}}</span>\
 			</a>\

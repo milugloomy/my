@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>菠菜概率计算器</title>
+    <title>NBA战绩查询</title>
     <link href="css/mui.css" rel="stylesheet"/>
 	<link href="css/mui.picker.css" rel="stylesheet" />
 	<link href="css/mui.poppicker.css" rel="stylesheet" />
@@ -20,14 +20,16 @@
 </head>
 <body>
 	<header class="mui-bar mui-bar-nav">
-    	<h1 class="mui-title">NBA查询</h1>
+    	<h1 class="mui-title">NBA战绩查询</h1>
 	</header>
-	<div class="mui-content" style="padding-bottom:55px;" id="muiContent" v-on:keyup.enter="submit">
+	<div class="mui-content" style="padding-bottom:55px;" id="muiContent">
 		<h5 class="mui-content-padded font18">胜率（本赛季）</h5>
 		<div class="mui-card font18">
 			<ul class="mui-table-view">
 		         <li class="mui-table-view-cell">主队胜率：<span style="padding-left:5%">{{homeRate}}</span></li>
 		         <li class="mui-table-view-cell">客队胜率：<span style="padding-left:5%">{{visitRate}}</span></li>
+		         <li class="mui-table-view-cell">主队让分胜率：<span style="padding-left:0">{{letHomeRate}}</span></li>
+		         <li class="mui-table-view-cell">客队让分胜率：<span style="padding-left:0">{{letVisitRate}}</span></li>
 		         <li class="mui-table-view-cell">买大胜率：<span style="padding-left:5%">{{bigRate}}</span></li>
 		         <li class="mui-table-view-cell">买小胜率：<span style="padding-left:5%">{{smallRate}}</span></li>
 			</ul>
@@ -46,7 +48,7 @@
 					<div class="mui-collapse-content" style="font-size:14px;text-align:center">
 						<template v-for="game in games">
 							<div class="mui-input-row" style="color:#020a97">
-								时间：{{game.matchTime}}
+								{{game.matchTime}}
 							</div>
 							<table align="center">
 								<tr style="border-bottom: 1px solid #b9b9b9;">
@@ -86,11 +88,15 @@ var teamPicker;
 var mc=new Vue({
 	el:"#muiContent",
 	beforeCreate:function(){
+		var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
 		$.post("totalRateQry.do",function(data){
+			layer.close(loadLayer);
 			mc.bigRate=data.bigRate+"%（"+data.bigCount+"场）";
 			mc.smallRate=data.smallRate+"%（"+data.smallCount+"场）";
 			mc.homeRate=data.homeRate+"%（"+data.homeCount+"场）";
 			mc.visitRate=data.visitRate+"%（"+data.visitCount+"场）";
+			mc.letHomeRate=data.letHomeRate+"%（"+data.letHomeCount+"场）";
+			mc.letVisitRate=data.letVisitRate+"%（"+data.letVisitCount+"场）";
 		},"json");
 	},
 	data:{
@@ -99,6 +105,8 @@ var mc=new Vue({
 		smallRate:"",
 		homeRate:"",
 		visitRate:"",
+		letHomeRate:"",
+		letVisitRate:"",
 		homeAvg:"",
 		homeLostAvg:"",
 		visitAvg:"",
@@ -122,7 +130,9 @@ var mc=new Vue({
 			teamPicker.show(function(items) {
 				var teamName=items[1].text;
 				mc.team="当前选择："+teamName;
+				var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
 				$.post("teamRateQry.do",{teamName:teamName},function(data){
+					layer.close(loadLayer);
 					mc.homeAvg=data.homeAvg;
 					mc.homeLostAvg=data.homeLostAvg;
 					mc.visitAvg=data.visitAvg;

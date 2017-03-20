@@ -2,8 +2,12 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,24 +26,18 @@ import com.google.gson.Gson;
 import bean.Announce;
 
 /**
- * Servlet implementation class MainServlet
+ * Servlet implementation class LastWeekServlet
  */
-public class MainServlet extends HttpServlet {
+public class LastWeekServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	private static String url="http://www.ccgp-hubei.gov.cn/pages/html/xzbnotice.html";
-    /**
-     * Default constructor. 
+       
+	private static String url="http://www.ccgp-hubei.gov.cn/fnoticeAction!listFNoticeInfos_n.action";
+   /**
+     * @see HttpServlet#HttpServlet()
      */
-    public MainServlet() {
-    	
+    public LastWeekServlet() {
+        super();
     }
-    
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -52,9 +50,27 @@ public class MainServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c=Calendar.getInstance();
+		String endTime=sdf.format(c.getTimeInMillis());
+		String beginTime=sdf.format(c.getTimeInMillis()-1000*3600*24*7);//7天前
+		Map<String,String> map=new HashMap<String,String>();
+		map.put("rank","");
+		map.put("queryInfo.curPage","1");
+		map.put("queryInfo.pageSize","1000");//查全部
+		map.put("queryInfo.TITLE","");
+		map.put("queryInfo.FBRMC","");
+		map.put("queryInfo.GGLX","招标公告");
+		map.put("queryInfo.CGLX","");
+		map.put("queryInfo.CGFS","");
+		map.put("queryInfo.BEGINTIME1",beginTime);
+		map.put("queryInfo.ENDTIME1",endTime);
+		map.put("queryInfo.QYBM","420100");
+		map.put("queryInfo.JHHH","");
 		Response res = Jsoup.connect(url)
 				.timeout(30*1000)//30秒
-				.method(Method.GET)
+				.method(Method.POST)
+				.data(map)
 				.execute();
 		Document doc=Jsoup.parse(res.body());
 		Element newsContent=doc.getElementsByClass("news_content").get(0);

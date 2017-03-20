@@ -14,4 +14,14 @@
     <servlet-name>MainServlet</servlet-name>
     <url-pattern>/MainServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>LastWeekServlet</display-name>
+    <servlet-name>LastWeekServlet</servlet-name>
+    <servlet-class>servlet.LastWeekServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LastWeekServlet</servlet-name>
+    <url-pattern>/LastWeekServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
