@@ -2,6 +2,7 @@ package bocai.service;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -144,6 +145,40 @@ public class NbaQryService {
 		}
 		map.put("last5Game", gameList);
 		return map;
+	}
+
+	public Double caculate(String teamName, String rhName, String hvName, String wlName) {
+		String sql="select avg(ARG1) from "
+				+" (select substring_index(score,'-',1) as homeScore,"
+				+" substring_index(score,'-',-1) as visitScore "
+				+ "from score where ARG2=? ARG3) x ";
+		String arg1,arg2,arg3 = null;
+		if(hvName.equals("主场")){
+			arg2="homeTeam";
+			if(wlName.equals("得分")){
+				arg1="homeScore";
+			}else{
+				arg1="visitScore";
+			}
+		}else{
+			arg2="visitTeam";
+			if(wlName.equals("得分")){
+				arg1="visitScore";
+			}else{
+				arg1="homeScore";
+			}
+		}
+		if(rhName.equals("最近五场")){
+			arg3=" order by matchTime desc limit 5";
+		}else{
+			arg3=" and matchTime>"+Util.seasonStart();
+		}
+		sql=sql.replace("ARG1", arg1).replace("ARG2", arg2).replace("ARG3", arg3);
+		
+		Double res=jdbcTemplate.queryForObject(sql, new Object[]{teamName},Double.class);
+		res=new Double(df.format(res));
+		
+		return res;
 	}
 }
 

@@ -8,10 +8,9 @@
     <link href="css/mui.css" rel="stylesheet"/>
 	<link href="css/mui.picker.css" rel="stylesheet" />
 	<link href="css/mui.poppicker.css" rel="stylesheet" />
-  	<style type="text/css">
+	<style type="text/css">
     	.font18{
 			font-size:18px;
-			font-family: "微软雅黑";
 		}
 		.button_left{
 			font-size:18px;
@@ -26,9 +25,38 @@
 			width:26%;
 			background-color:#5CE665;
 		}
+		.button_3{
+			font-size: 14px;
+		    line-height: 1.5;
+		    width: 24%;
+		    padding: 10px 2px;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+		.button_4{
+			font-size: 18px;
+		    width: 100%;
+		    padding: 10px 2px;
+			text-align: center;
+			margin-bottom: 5px;
+			position: relative !important;
+			right:0px !important;
+			font-weight: bold;
+		}
+		.symbol{
+			font-size:50px;
+			line-height: 50px;
+			text-align: center;
+		}
+		.layerLi{
+		    position: relative;
+		    padding: 1px 15px;
+		}
 		table td{
 			padding:2px 3px;
 		}
+		
+		
     </style>
 </head>
 <body>
@@ -75,8 +103,60 @@
 		</ul>
 	</div>
 	<h5 class="mui-content-padded font18">公式计算器</h5>
-	<div class="mui-content" style="padding-bottom:55px;" id="muiContent">
-		
+	<div class="mui-content" style="padding-bottom:55px;padding-top:0px;" id="eqContent">
+		<div class="mui-card font18" style="padding-top: 10px;">
+			<template v-for="(item,index) in mathList">
+			<div class="mui-input-row symbol" v-if="item.plusShow">+</div>
+			<div style="text-align: center;" class="mui-input-row">
+				<input type="hidden" v-bind:value="index">
+				<span class="mui-icon mui-icon-compose" style="margin-left:5px;" v-on:click="editOne"></span>
+				<input  placeholder="系数" type="number" v-model="item.factor" class="mui-input-clear" style="width:80px;margin-left: 10px;">
+				X&nbsp;
+				<input type="number" v-bind:value="item.score" class="mui-input-clear" style="width:100px" >
+				<span class="mui-icon mui-icon-plus" v-if="item.addShow" style="margin-left:10px;" v-on:click="addOne"></span>
+				<span class="mui-icon mui-icon-minus" style="margin-left:10px;" v-on:click="removeOne"></span>
+			</div>
+			</template>
+			<div class="mui-input-row symbol">=</div>
+		    <div class="mui-input-row">
+		        <label style="text-align: right;width:27%">结果：</label>
+		        <input type="number" v-bind:value="result" class="mui-input-clear" style="padding-left:15px;margin-bottom:10px;border: 1px solid #ccc">
+		    </div>
+		</div>
+		<div id="buttonDiv" style="display:none">
+				<ul class="mui-table-view" style="padding-top: 10px;">
+			        <li class="layerLi">
+			        	<label>球队：</label>
+			        	<button v-on:click="chooseTeam" v-html="teamName" class="button_4 mui-btn mui-btn-primary">
+							选择球队
+			        	</button>
+			        </li>
+			        <li class="layerLi">
+			        	<label>场次：</label>
+			        	<button v-on:click="chooseRH" v-html="rhName" class="button_4 mui-btn mui-btn-primary" >
+							选择场次
+						</button>
+			        </li>
+			        <li class="layerLi">
+			        	<label>主客场：</label>
+			        	<button v-on:click="chooseHV" v-html="hvName" class="button_4 mui-btn mui-btn-primary" >
+							选择主客场
+						</button>
+			        </li>
+			        <li class="layerLi">
+			        	<label>得失分:</label>
+			        	<button v-on:click="chooseWL" v-html="wlName" class="button_4 mui-btn mui-btn-primary" >
+							选择得失分
+						</button>
+			        </li>
+			        <li class="mui-table-view-cell">
+			        	<label style="text-align: right;width:27%;margin-left: 10%">分数：</label>
+		        		<input style="width:70%;margin-bottom: 0px;" type="number" v-bind:value="tempScore" class="mui-input-clear" style="margin-bottom:10px;border: 1px solid #ccc">
+			        </li>
+			        <h5 id="errSpan" class="mui-content-padded font18" style="height:20px;color:red;">{{butErrMsg}}</h5>
+				</ul>
+			</div>
+		<h5 id="errSpan" class="mui-content-padded font18" style="height:20px;color:red;">{{errMsg}}</h5>
 	</div>
 	<div id="nav">
 		<mynav menu3="true"></mynav>
@@ -92,27 +172,207 @@
 <script src="js/teamData.js"></script>
 
 <script type="text/javascript" charset="utf-8">
-var tc=new Vue({
-	el:"#teamContent",
-	beforeCreate:function(){
-		$.post("totalRateQry.do",function(data){
-			tc.bigRate=data.bigRate+"%（"+data.bigCount+"场）";
-			tc.smallRate=data.smallRate+"%（"+data.smallCount+"场）";
-			tc.homeRate=data.homeRate+"%（"+data.homeCount+"场）";
-			tc.visitRate=data.visitRate+"%（"+data.visitCount+"场）";
-			tc.letHomeRate=data.letHomeRate+"%（"+data.letHomeCount+"场）";
-			tc.letVisitRate=data.letVisitRate+"%（"+data.letVisitCount+"场）";
-		},"json");
+var ec=new Vue({
+	el:"#eqContent",
+	computed:{
+		rhPicker:function(){//场次
+			var t = new mui.PopPicker({
+				layer: 1,
+			});
+			t.setData([{
+					value: '1',
+					text: '最近五场'
+				},{
+					value: '2',
+					text: '本赛季'
+			}]);
+			return t;
+		},
+		hvPicker:function(){//主客场
+			var t = new mui.PopPicker({
+				layer: 1,
+			});
+			t.setData([{
+					value: '1',
+					text: '主场'
+				},{
+					value: '2',
+					text: '客场'
+			}]);
+			return t;
+		},
+		wlPicker:function(){//得失分
+			var t = new mui.PopPicker({
+				layer: 1,
+			});
+			t.setData([{
+					value: '1',
+					text: '得分'
+				},{
+					value: '2',
+					text: '失分'
+			}]);
+			return t;
+		}
 	},
 	data:{
-		team:"球队数据&nbsp;&nbsp;&nbsp;﹀",
-		teamPicker:(function(){
-			var t = new mui.PopPicker({
-				layer: 2,
+		errMsg:"",
+		teamName:"选择球队",
+		rhName:"选择场次",
+		hvName:"选择主客场",
+		wlName:"选择得失分",
+		tempScore:0,//buttonLayer的分数
+		butErrMsg:"",//buttonLayer的分数的报错信息
+		mathList:[{//列表数据
+			teamName:"",
+			rhName:"",
+			hvName:"",
+			wlName:"",
+			score:0,
+			factor:0,//系数
+			addShow:true,
+			plusShow:false
+		}],
+		result:0,
+		index:0//当前index
+	},
+	watch:{
+		mathList:{
+			handler:function(){
+				for (var sum=0,i=0;i<this.mathList.length;i++) {
+					var score=this.mathList[i].score;
+					var factor=this.mathList[i].factor;
+					sum+=(score*factor);
+				}
+				this.result=sum;
+			},
+			deep:true
+		}
+	},
+	methods:{
+		getIndex:function(event){
+			return event.target.parentNode.getElementsByTagName("input")[0].value;
+		},
+		picker:function(event,obj,paraName){
+			ec.butErrMsg="";
+			obj.show(function(items){
+				if(paraName=="teamName"){
+					ec.mathList[ec.index][paraName]=items[1].text;
+					ec[paraName]=items[1].text;
+				}else{
+					ec.mathList[ec.index][paraName]=items[0].text;
+					ec[paraName]=items[0].text;
+				}
+				event.target.style.background='white';
+				event.target.style.color='black';
+				
+				var teamName=ec.mathList[ec.index].teamName;
+				var rhName=ec.mathList[ec.index].rhName;
+				var hvName=ec.mathList[ec.index].hvName;
+				var wlName=ec.mathList[ec.index].wlName;
+				
+				if(teamName!="" && rhName!="" && hvName!="" && wlName!=""){
+					var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+					$.post("calculate.do",{teamName:teamName,rhName:rhName,hvName:hvName,wlName:wlName},function(data){
+						layer.close(loadLayer);
+						ec.tempScore=data.result;
+					},"json");
+				}
 			});
-			t.setData(teamData);
-			return t;
-		})(),
+		},
+		chooseTeam:function(event){
+			this.picker(event,tc.teamPicker,"teamName");
+		},
+		chooseRH:function(event){
+			this.picker(event,ec.rhPicker,"rhName");
+		},
+		chooseHV:function(event){
+			this.picker(event,ec.hvPicker,"hvName");
+		},
+		chooseWL:function(event){
+			this.picker(event,ec.wlPicker,"wlName");
+		},
+		calculate:function(event){
+			console.log(event.target.value);
+		},
+		initButLayer:function(){
+			var item=this.mathList[this.index];
+			if(item.score==0){
+				this.teamName="选择球队";
+				this.rhName="选择场次";
+				this.hvName="选择主客场";
+				this.wlName="选择得失分";
+				this.tempScore=0;
+				$("li button").css({
+					background:'#007aff',
+					color:'white'
+				});
+			}else{
+				this.teamName=item.teamName;
+				this.rhName=item.rhName;
+				this.hvName=item.hvName;
+				this.wlName=item.wlName;
+				this.tempScore=item.score;
+				$("li button").css({
+					background:'white',
+					color:'black'
+				});
+			}
+		},
+		editOne:function(event){
+			this.index=this.getIndex(event);
+			this.initButLayer();
+			var buttonLayer=layer.open({
+				title:"<div class='font18'>请选择</div>",
+				btn: ["确定"],
+				btn1:function(){
+					if(ec.tempScore!=0){
+						ec.mathList[ec.index].score=ec.tempScore;
+						layer.close(buttonLayer);
+					}else{
+						ec.butErrMsg="还有未选择的项";
+					}
+				},
+				cancel:function(){
+					ec.butErrMsg="";
+					layer.close(buttonLayer);
+				},
+				type:1,
+				content:$("#buttonDiv"),
+				area:"95%",
+				zIndex:2
+			});
+		},
+		addOne:function(event){
+			this.mathList.push({
+				teamName:"",
+				rhName:"",
+				hvName:"",
+				wlName:"",
+				score:0,
+				factor:0,
+				addShow:true,
+				plusShow:true
+			});
+			this.index=this.getIndex(event);
+			this.mathList[this.index].addShow=false;
+		},
+		removeOne:function(event){
+			if(this.mathList.length==1){
+				return;	
+			}
+			this.index=this.getIndex(event);
+			this.mathList.splice(this.index,1);
+			this.mathList[this.mathList.length-1].addShow=true;
+			this.mathList[0].plusShow=false;
+		}
+	}
+});
+
+var tc=new Vue({//查询球队数据
+	el:"#teamContent",
+	data:{
+		team:"选择球队&nbsp;&nbsp;&nbsp;﹀",
 		homeAvg:"",
 		homeLostAvg:"",
 		visitAvg:"",
@@ -123,14 +383,29 @@ var tc=new Vue({
 		last5VisitLostAvg:"",
 		games:""
 	},
+	computed:{
+		teamPicker:function(){
+			var t = new mui.PopPicker({
+				layer: 2,
+			});
+			t.setData(teamData);
+			return t;
+		}
+	},
 	methods:{
 		chooseTeam:function(event){
-//			var button=event.currentTarget;
 			tc.teamPicker.show(function(items) {
 				tc.team=items[1].text;
+				event.target.style.background='white';
+				event.target.style.color='black';
+				ec.errMsg="";
 			});
 		},
 		qryTeam:function(event){
+			if(tc.team=="选择球队&nbsp;&nbsp;&nbsp;﹀"){
+				ec.errMsg="请选择球队";
+				return;
+			}
 			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
 			$.post("teamRateQry.do",{teamName:tc.team},function(data){
 				layer.close(loadLayer);
@@ -144,7 +419,7 @@ var tc=new Vue({
 				tc.last5VisitLostAvg=data.last5VisitLostAvg;
 				tc.games=data.last5Game;
 				//渲染完成再弹出
-				Vue.nextTick(function(){
+				tc.$nextTick(function(){
 					var teamLayer=layer.open({
 						title:"<div class='font18'>球队战绩</div>",
 						btn: ["确定"],

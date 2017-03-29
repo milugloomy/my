@@ -6,6 +6,11 @@
    	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 	<title>市级招标公告</title>
 	<link rel="stylesheet" href="css/bootstrap.css"></link>
+  	<style type="text/css">
+    	red{
+			color:red;
+		}
+    </style>
 </head>
 <body>
 	<div class="container-fluid" id="divBody">
@@ -52,6 +57,7 @@ var lg=new Vue({
 	},
 	methods:{
 		tabChange:function(event){
+			this.searchWd="";
 			var id;
 			if(event==undefined)
 				id="tab1";
@@ -102,7 +108,7 @@ var lg=new Vue({
 					var index=name.indexOf(val);
 					var showName=lg.list[i].showName;
 					lg.list[i].showName=showName.substring(0,index)
-						+"<span style='color:red'>"+val+"</span>"
+						+"<red>"+val+"</red>"
 						+showName.substring(index+val.length);
 				//分开一个字一个字的找
 				}else{
@@ -113,7 +119,7 @@ var lg=new Vue({
 						}else{
 							var showName=lg.list[i].showName;
 							lg.list[i].showName=showName.substring(0,showName.indexOf(vArr[j]))
-								+"<span style='color:red'>"+vArr[j]+"</span>"
+								+"<red>"+vArr[j]+"</red>"
 								+showName.substring(showName.indexOf(vArr[j])+vArr[j].length);
 						}
 					}
