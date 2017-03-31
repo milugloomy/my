@@ -41,8 +41,8 @@
 			<ul class="mui-table-view" v-if="detailShow">
 		    	<li class="mui-table-view-cell">主场得失分：<span style="padding-left:1%">{{homeAvg}} / {{homeLostAvg}}</span></li>
 	        	<li class="mui-table-view-cell">客场得失分：<span style="padding-left:1%">{{visitAvg}} / {{visitLostAvg}}</span></li>
-		    	<li class="mui-table-view-cell">近五场客场：<span style="padding-left:1%">{{last5HomeAvg}} / {{last5HomeLostAvg}}</span></li>
-		    	<li class="mui-table-view-cell">近五场主场：<span style="padding-left:1%">{{last5VisitAvg}} / {{last5VisitLostAvg}}</span></li>
+		    	<li class="mui-table-view-cell">近五场主场：<span style="padding-left:1%">{{last5HomeAvg}} / {{last5HomeLostAvg}}</span></li>
+		    	<li class="mui-table-view-cell">近五场客场：<span style="padding-left:1%">{{last5VisitAvg}} / {{last5VisitLostAvg}}</span></li>
 		    	<li class="mui-table-view-cell mui-collapse">
 					<a class="mui-navigate-right" href="javascript:;" style="color:cornflowerblue">近5场比分：</a>
 					<div class="mui-collapse-content" style="font-size:14px;text-align:center">
@@ -74,10 +74,10 @@
 		<mynav menu2="true"></mynav>
 	</div>
 	
-<script src="js/vue.js"></script>
-<script src="js/nav.js"></script>
 <script src="js/jquery.js"></script>
 <script src="js/layer.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/nav.js"></script>
 <script src="js/mui.js"></script>
 <script src="js/mui.picker.js"></script>
 <script src="js/mui.poppicker.js"></script>
@@ -87,9 +87,7 @@
 var mc=new Vue({
 	el:"#muiContent",
 	beforeCreate:function(){
-		var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
-		$.post("totalRateQry.do",function(data){
-			layer.close(loadLayer);
+		$.post2SRV("totalRateQry.do",function(data){
 			mc.bigRate=data.bigRate+"%（"+data.bigCount+"场）";
 			mc.smallRate=data.smallRate+"%（"+data.smallCount+"场）";
 			mc.homeRate=data.homeRate+"%（"+data.homeCount+"场）";
@@ -138,9 +136,7 @@ var mc=new Vue({
 			this.teamPicker.show(function(items) {
 				var teamName=items[1].text;
 				mc.team="当前选择："+teamName;
-				var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
-				$.post("teamRateQry.do",{teamName:teamName},function(data){
-					layer.close(loadLayer);
+				$.post2SRV("teamRateQry.do",{teamName:teamName},function(data){
 					mc.homeAvg=data.homeAvg;
 					mc.homeLostAvg=data.homeLostAvg;
 					mc.visitAvg=data.visitAvg;

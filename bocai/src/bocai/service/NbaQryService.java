@@ -151,7 +151,8 @@ public class NbaQryService {
 				+" (select substring_index(score,'-',1) as homeScore,"
 				+" substring_index(score,'-',-1) as visitScore "
 				+ "from score where ARG2=? ARG3) x ";
-		String arg1,arg2,arg3 = null;
+		Object[] param=new Object[]{teamName};
+		String arg1 = null,arg2 = null,arg3 = null;
 		if(hvName.equals("主场")){
 			arg2="homeTeam";
 			if(wlName.equals("得分")){
@@ -159,25 +160,51 @@ public class NbaQryService {
 			}else{
 				arg1="visitScore";
 			}
-		}else{
+		}else if(hvName.equals("客场")){
 			arg2="visitTeam";
 			if(wlName.equals("得分")){
 				arg1="visitScore";
 			}else{
 				arg1="homeScore";
 			}
+		}else{//所有场次 sql结构不一样重写
+			if(wlName.equals("得分")){
+				sql="select avg("
+						+ "case when hometeam=? "
+							+ "then substring_index(score,'-',1) "
+							+ "else substring_index(score,'-',-1) "
+						+ "end)"
+						+ " from "
+						+"(select * from score where homeTeam=? or visitTeam=? ARG3) x";
+			}else{
+				sql="select avg("
+						+ "case when hometeam=? "
+						+ "then substring_index(score,'-',-1) "
+						+ "else substring_index(score,'-',1) "
+					+ "end)"
+					+ " from "
+					+"(select * from score where homeTeam=? or visitTeam=? ARG3) x";
+			}
+			param=new Object[]{teamName,teamName,teamName};
 		}
+		
 		if(rhName.equals("最近五场")){
 			arg3=" order by matchTime desc limit 5";
+		}else if(rhName.equals("最近三场")){
+			arg3=" order by matchTime desc limit 3";
 		}else{
-			arg3=" and matchTime>"+Util.seasonStart();
+			arg3=" and matchTime>\'"+Util.seasonStart()+"\'";
 		}
-		sql=sql.replace("ARG1", arg1).replace("ARG2", arg2).replace("ARG3", arg3);
+		sql=sql.replaceAll("ARG1", arg1).replaceAll("ARG2", arg2).replaceAll("ARG3", arg3);
 		
-		Double res=jdbcTemplate.queryForObject(sql, new Object[]{teamName},Double.class);
+		Double res=jdbcTemplate.queryForObject(sql, param,Double.class);
 		res=new Double(df.format(res));
-		
 		return res;
+	}
+	
+	public <T> T sss(String sql,Object[] param,Class<T> t){
+
+		return null;
 	}
 }
 

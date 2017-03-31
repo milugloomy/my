@@ -123,10 +123,10 @@
 	</div>
 	<div id="gChartDiv" style="display:none;width:100%"></div>
 	
-<script src="js/vue.js"></script>
-<script src="js/nav.js"></script>
 <script src="js/jquery.js"></script>
 <script src="js/layer.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/nav.js"></script>
 <script src="js/highcharts.js"></script>
 <script src="js/exporting.js"></script>
 <script type="text/javascript" charset="utf-8">
@@ -151,10 +151,7 @@ var mc=new Vue({
 			//校验参数
 			if(check()==false)
 				return;
-			//loading
-			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
-			$.post("count.do",getParam(),function(data){
-				layer.close(loadLayer);
+			$.post2SRV("count.do",getParam(),function(data){
 				for(var i=0;i<data.length;i++){
 					var result=data[i];
 					if(typeof result.v == "number")
@@ -164,7 +161,7 @@ var mc=new Vue({
 				}
 				ld.results=data;
 				//渲染完成再回调
-				Vue.nextTick(function(){
+				mc.$nextTick(function(){
 					var countLayer=layer.open({
 						title:"<div class='font18'>运算结果</div>",
 						btn: ["确定"],
@@ -180,11 +177,8 @@ var mc=new Vue({
 		npChartClick:function(){
 			if(check()==false)
 				return;
-			//loading
-			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
 			var param=getParam();
-			$.post("npChart.do",param,function(data){
-				layer.close(loadLayer);
+			$.post2SRV("npChart.do",param,function(data){
 				var nList=JSON.parse(data.minList);
 				var pList=JSON.parse(data.maxList);
 				var xArrN=[];var countN=[];
@@ -304,11 +298,8 @@ var mc=new Vue({
 		gChartClick:function(){
 			if(check()==false)
 				return;
-			//loading
-			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
 			var param=getParam();
-			$.post("gChart.do",param,function(data){
-				layer.close(loadLayer);
+			$.post2SRV("gChart.do",param,function(data){
 				var xArr=[];var count=[];
 				for(var i=0;i<data.length;i++){
 					xArr.push(data[i].avg);

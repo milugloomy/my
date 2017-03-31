@@ -50,10 +50,9 @@
 	</bean>
 	
 	<!-- 自动扫描注解 -->
-	<context:component-scan base-package="bocai.controller" />
 	<context:component-scan base-package="bocai.batch" />
+	<context:component-scan base-package="bocai.controller" />
 	<context:component-scan base-package="bocai.service" />
-	<context:component-scan base-package="bocai.common" />
 	
 	<bean id="coreDS" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${DataSource.driverClassName}" />		

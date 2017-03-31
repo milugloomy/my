@@ -38,3 +38,27 @@ Vue.component('mynav', {
 var nav=new Vue({
 	el:"#nav"
 });
+jQuery.post2SRV=function(url,param,callback,dataType){
+	if(dataType==undefined){
+		callback=param;
+		dataType=callback;
+	}
+	var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
+	$.ajax({
+		url:url,
+		data:param,
+		timeout:5000,
+		success:function(data){
+			layer.close(loadLayer);
+			callback(data);
+		},
+		error:function(){
+			layer.close(loadLayer);
+			layer.alert("<div style='font-size:18px'>系统忙,请稍后再试</div>",{
+				icon: 5,
+				title:"<div style='font-size:18px'>出错啦</div>"
+			});
+		},
+		dataType:dataType
+	});
+}

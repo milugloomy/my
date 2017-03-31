@@ -74,8 +74,8 @@
 		<ul class="mui-table-view" id="teamDiv" style="display: none;">
 	    	<li class="mui-table-view-cell">主场得失分：<span style="padding-left:1%">{{homeAvg}} / {{homeLostAvg}}</span></li>
         	<li class="mui-table-view-cell">客场得失分：<span style="padding-left:1%">{{visitAvg}} / {{visitLostAvg}}</span></li>
-	    	<li class="mui-table-view-cell">近五场客场：<span style="padding-left:1%">{{last5HomeAvg}} / {{last5HomeLostAvg}}</span></li>
-	    	<li class="mui-table-view-cell">近五场主场：<span style="padding-left:1%">{{last5VisitAvg}} / {{last5VisitLostAvg}}</span></li>
+	    	<li class="mui-table-view-cell">近五场主场：<span style="padding-left:1%">{{last5HomeAvg}} / {{last5HomeLostAvg}}</span></li>
+	    	<li class="mui-table-view-cell">近五场客场：<span style="padding-left:1%">{{last5VisitAvg}} / {{last5VisitLostAvg}}</span></li>
 	    	<li class="mui-table-view-cell mui-collapse">
 				<a class="mui-navigate-right" href="javascript:;" style="color:cornflowerblue">近5场比分：</a>
 				<div class="" style="font-size:14px;text-align:center">
@@ -110,9 +110,9 @@
 			<div style="text-align: center;" class="mui-input-row">
 				<input type="hidden" v-bind:value="index">
 				<span class="mui-icon mui-icon-compose" style="margin-left:5px;" v-on:click="editOne"></span>
-				<input  placeholder="系数" type="number" v-model="item.factor" class="mui-input-clear" style="width:80px;margin-left: 10px;">
+				<input  placeholder="系数" type="number" v-model="item.factor" style="width:80px;margin-left: 10px;">
 				X&nbsp;
-				<input type="number" v-bind:value="item.score" class="mui-input-clear" style="width:100px" >
+				<input type="number" readonly="readonly" v-on:click="editOne" v-bind:value="item.score" class="mui-input-clear" style="width:100px" >
 				<span class="mui-icon mui-icon-plus" v-if="item.addShow" style="margin-left:10px;" v-on:click="addOne"></span>
 				<span class="mui-icon mui-icon-minus" style="margin-left:10px;" v-on:click="removeOne"></span>
 			</div>
@@ -126,25 +126,21 @@
 		<div id="buttonDiv" style="display:none">
 				<ul class="mui-table-view" style="padding-top: 10px;">
 			        <li class="layerLi">
-			        	<label>球队：</label>
 			        	<button v-on:click="chooseTeam" v-html="teamName" class="button_4 mui-btn mui-btn-primary">
 							选择球队
 			        	</button>
 			        </li>
 			        <li class="layerLi">
-			        	<label>场次：</label>
 			        	<button v-on:click="chooseRH" v-html="rhName" class="button_4 mui-btn mui-btn-primary" >
 							选择场次
 						</button>
 			        </li>
 			        <li class="layerLi">
-			        	<label>主客场：</label>
 			        	<button v-on:click="chooseHV" v-html="hvName" class="button_4 mui-btn mui-btn-primary" >
 							选择主客场
 						</button>
 			        </li>
 			        <li class="layerLi">
-			        	<label>得失分:</label>
 			        	<button v-on:click="chooseWL" v-html="wlName" class="button_4 mui-btn mui-btn-primary" >
 							选择得失分
 						</button>
@@ -162,10 +158,10 @@
 		<mynav menu3="true"></mynav>
 	</div>
 	
-<script src="js/vue.js"></script>
-<script src="js/nav.js"></script>
 <script src="js/jquery.js"></script>
 <script src="js/layer.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/nav.js"></script>
 <script src="js/mui.js"></script>
 <script src="js/mui.picker.js"></script>
 <script src="js/mui.poppicker.js"></script>
@@ -181,9 +177,12 @@ var ec=new Vue({
 			});
 			t.setData([{
 					value: '1',
-					text: '最近五场'
+					text: '最近三场'
 				},{
 					value: '2',
+					text: '最近五场'
+				},{
+					value: '3',
 					text: '本赛季'
 			}]);
 			return t;
@@ -198,6 +197,9 @@ var ec=new Vue({
 				},{
 					value: '2',
 					text: '客场'
+				},{
+					value: '3',
+					text: '所有场次'
 			}]);
 			return t;
 		},
@@ -272,9 +274,7 @@ var ec=new Vue({
 				var wlName=ec.mathList[ec.index].wlName;
 				
 				if(teamName!="" && rhName!="" && hvName!="" && wlName!=""){
-					var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
-					$.post("calculate.do",{teamName:teamName,rhName:rhName,hvName:hvName,wlName:wlName},function(data){
-						layer.close(loadLayer);
+					$.post2SRV("calculate.do",{teamName:teamName,rhName:rhName,hvName:hvName,wlName:wlName},function(data){
 						ec.tempScore=data.result;
 					},"json");
 				}
@@ -406,9 +406,7 @@ var tc=new Vue({//查询球队数据
 				ec.errMsg="请选择球队";
 				return;
 			}
-			var loadLayer=layer.load(1,{shade: [0.5,'#fff']});
-			$.post("teamRateQry.do",{teamName:tc.team},function(data){
-				layer.close(loadLayer);
+			$.post2SRV("teamRateQry.do",{teamName:tc.team},function(data){
 				tc.homeAvg=data.homeAvg;
 				tc.homeLostAvg=data.homeLostAvg;
 				tc.visitAvg=data.visitAvg;
