@@ -42,7 +42,8 @@ public class HttpBusiness {
 		paramMap.put("queryInfo.CGFS","");//
 		paramMap.put("queryInfo.BEGINTIME1",beginTime);//
 		paramMap.put("queryInfo.ENDTIME1",endTime);//
-		paramMap.put("queryInfo.QYBM","420100");//武汉市
+//		paramMap.put("queryInfo.bmbm","20090812125709750ZKZe5cUfRMP7R");
+		paramMap.put("queryInfo.QYBM","420101");//武汉市
 		paramMap.put("queryInfo.JHHH","");//
 		
 		String s=httpPost(url,paramMap);

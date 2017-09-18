@@ -25,9 +25,9 @@
 		<property name="jobDetail" ref="groupBatchFactory"></property>
 		<property name="cronExpression">
 			<!-- 每隔2小时触发 -->
-<!-- 			  <value>0 0 0/2 * * ?</value> -->
+			  <value>0 0 0/2 * * ?</value>
 			<!-- 每隔5秒触发 -->
-			  <value>0/5 * * * * ?</value>
+<!-- 			  <value>0/5 * * * * ?</value> -->
 		</property>
 	</bean>
 	

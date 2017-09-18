@@ -20,10 +20,10 @@ import javax.mail.internet.MimeUtility;
 
 public class MailBusiness {
 	
-	private static String host="smtp.163.com";
+	private static String host="smtp.126.com";
 	private static String user="milugloomy";
-	private static String password="nitai2le";
-	private static String mailFrom="milugloomy@163.com";
+	private static String password="hahaha";
+	private static String mailFrom="milugloomy@126.com";
 
 	public void send(List<Announce> newList) {
 		if(newList.size()==0){

@@ -1197,6 +1197,6 @@ function loaded() {
 		}
 	});
 	
-	setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
+//	setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
 }
 
